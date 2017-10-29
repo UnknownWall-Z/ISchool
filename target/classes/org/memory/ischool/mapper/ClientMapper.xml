@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.ClientMapper">
+    <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Client">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="buildTime" property="buildtime" jdbcType="DATE"/>
+        <result column="inputTime" property="inputtime" jdbcType="TIMESTAMP"/>
+        <result column="interviewTime" property="interviewtime" jdbcType="DATE"/>
+        <result column="weChat" property="wechat" jdbcType="VARCHAR"/>
+        <result column="age" property="age" jdbcType="INTEGER"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="education" property="education" jdbcType="VARCHAR"/>
+        <result column="workingLife" property="workinglife" jdbcType="INTEGER"/>
+        <result column="clientType" property="clienttype" jdbcType="VARCHAR"/>
+        <result column="startSchoolTime" property="startschooltime" jdbcType="DATE"/>
+        <result column="wantedSubject" property="wantedsubject" jdbcType="VARCHAR"/>
+        <result column="wantedschool" property="wantedschool" jdbcType="VARCHAR"/>
+        <result column="origin" property="origin" jdbcType="VARCHAR"/>
+        <result column="QQ" property="qq" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="VARCHAR"/>
+        <result column="major" property="major" jdbcType="VARCHAR"/>
+        <result column="wantedLevel" property="wantedlevel" jdbcType="VARCHAR"/>
+        <result column="nextTime" property="nexttime" jdbcType="DATE"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="tel" property="tel" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="state" property="state" jdbcType="VARCHAR"/>
+        <result column="concern" property="concern" jdbcType="VARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="trackTime" property="tracktime" jdbcType="INTEGER"/>
+        <result column="lastTrackDate" property="lasttrackdate" jdbcType="DATE"/>
+        <result column="inPoolTime" property="inpooltime" jdbcType="DATE"/>
+        <result column="schoolname" property="schoolname" jdbcType="VARCHAR"/>
+        <result column="inPoolReason" property="inpoolreason" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="trackState" property="trackstate" jdbcType="BOOLEAN"/>
+        <association property="marketuser" column="marketUser_id" javaType="org.memory.ischool.domain.Employee"
+                     select="org.memory.ischool.mapper.EmployeeMapper.selectByPrimaryKey">
+        </association>
+        <association property="inputuser" column="inputUser_id" javaType="org.memory.ischool.domain.Employee"
+                     select="org.memory.ischool.mapper.EmployeeMapper.selectByPrimaryKey">
+        </association>
+        <association property="wantedclass" javaType="org.memory.ischool.domain.Studentclass" column="wantedclass_id" select="org.memory.ischool.mapper.StudentclassMapper.selectByPrimaryKey">
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from client
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="org.memory.ischool.domain.Client" useGeneratedKeys="true" keyProperty="id">
+    insert into client (buildTime, inputTime, interviewTime,weChat, age, address, education, workingLife, wantedClass_id,clientType, startSchoolTime, wantedSubject,marketUser_id, wantedschool, origin,QQ, sex, major, wantedLevel,inputUser_id, nextTime, username,tel, email, state,concern, remark, trackTime,lastTrackDate, schoolname,status,trackState)
+    values (#{buildtime,jdbcType=DATE}, #{inputtime,jdbcType=TIMESTAMP}, #{interviewtime,jdbcType=DATE},
+      #{wechat,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER}, #{address,jdbcType=VARCHAR},
+      #{education,jdbcType=VARCHAR}, #{workinglife,jdbcType=INTEGER}, #{wantedclass.id,jdbcType=VARCHAR},
+      #{clienttype,jdbcType=VARCHAR}, #{startschooltime,jdbcType=DATE}, #{wantedsubject,jdbcType=VARCHAR},
+      #{marketuser.id,jdbcType=BIGINT}, #{wantedschool,jdbcType=VARCHAR}, #{origin,jdbcType=VARCHAR},
+      #{qq,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR}, #{major,jdbcType=VARCHAR}, #{wantedlevel,jdbcType=VARCHAR},
+      #{inputuser.id,jdbcType=BIGINT}, #{nexttime,jdbcType=DATE}, #{username,jdbcType=VARCHAR},
+      #{tel,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{state,jdbcType=VARCHAR},
+      #{concern,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{tracktime,jdbcType=INTEGER},
+      #{lasttrackdate,jdbcType=DATE},#{schoolname,jdbcType=VARCHAR},"1",0)
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.Client">
+    update client
+    set buildTime = #{buildtime,jdbcType=DATE},
+      inputTime = #{inputtime,jdbcType=TIMESTAMP},
+      weChat = #{wechat,jdbcType=VARCHAR},
+      age = #{age,jdbcType=INTEGER},
+      address = #{address,jdbcType=VARCHAR},
+      education = #{education,jdbcType=VARCHAR},
+      workingLife = #{workinglife,jdbcType=INTEGER},
+      wantedClass_id = #{wantedclass.id,jdbcType=VARCHAR},
+      clientType = #{clienttype,jdbcType=VARCHAR},
+      startSchoolTime = #{startschooltime,jdbcType=DATE},
+      wantedSubject = #{wantedsubject,jdbcType=VARCHAR},
+      marketUser_id = #{marketuser.id,jdbcType=BIGINT},
+      wantedschool = #{wantedschool,jdbcType=VARCHAR},
+      origin = #{origin,jdbcType=VARCHAR},
+      QQ = #{qq,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=VARCHAR},
+      major = #{major,jdbcType=VARCHAR},
+      wantedLevel = #{wantedlevel,jdbcType=VARCHAR},
+      inputUser_id = #{inputuser.id,jdbcType=BIGINT},
+      nextTime = #{nexttime,jdbcType=DATE},
+      username = #{username,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      state = #{state,jdbcType=VARCHAR},
+      concern = #{concern,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      schoolname = #{schoolname,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select id, buildTime, inputTime, interviewTime, weChat, age, address, education,
+    workingLife, wantedClass_id, clientType, startSchoolTime, wantedSubject, marketUser_id,
+    wantedschool, origin, QQ, sex, major, wantedLevel, inputUser_id, nextTime, username,
+    tel, email, state, concern, remark, trackTime, lastTrackDate, inPoolTime, schoolname,inPoolReason,status,trackState
+    from client
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+   select c.*,e.id mid,e.realname mname from client c
+   LEFT JOIN employee e
+   ON c.marketUser_id=e.id
+  </select>
+    <sql id="from_sql">
+        SELECT c.*,e.realname,
+        FROM client c
+        LEFT JOIN employee e ON c.inputUser_id=e.id
+        LEFT JOIN
+    </sql>
+    <sql id="where_sql">
+        <where>
+            <if test="name!=null and name!=''">
+                and username like concat('%',#{name},'%')
+            </if>
+            <if test="qq!=null and qq!=''">
+                and qq like concat('%',#{qq},'%')
+            </if>
+            <if test="wechat!=null and wechat!=''">
+                and wechat like concat('%',#{wechat},'%')
+            </if>
+            <if test="wantedSchool!=null and wantedSchool!=''">
+                and wantedSchool like concat('%',#{wantedSchool},'%')
+            </if>
+            <if test="subject!=null and subject!=''">
+                and wantedSubject like concat('%',#{subject},'%')
+            </if>
+            <if test="wantedClassId!=null">
+                and wantedclass_id=#{wantedClassId}
+            </if>
+            <if test="saleManId>0">
+                and  marketUser_id=#{saleManId}
+            </if>
+            <if test="saleManId==0">
+                and  marketUser_id is null
+            </if>
+
+            <if test="beginTime!=null">
+                and inputtime &gt; #{beginTime}
+            </if>
+            <if test="endTime!=null">
+                and inputtime &lt;#{endTime}
+            </if>
+            <if test="interviewBeginTime!=null">
+                and interviewtime &gt;#{interviewBeginTime}
+            </if>
+            <if test="interviewEndTime!=null">
+                and interviewtime &lt;#{interviewEndTime}
+            </if>
+            <if test="origin!=null and origin!=''">
+                and origin like concat('%',#{origin},'%')
+            </if>
+
+        </where>
+    </sql>
+    <select id="getTotalCount" resultType="long">
+        select count(*) from client c
+        <include refid="where_sql"/>
+    </select>
+
+    <select id="getListData" resultMap="BaseResultMap">
+        select * from client c
+        <include refid="where_sql"/>
+        limit #{start},#{rows}
+    </select>
+    <select id="getTotalCountForPool" resultType="long">
+        select count(0) from client c
+        <include refid="where_sql"/>
+    </select>
+    <select id="getListDataForPool" resultMap="BaseResultMap">
+        select * from client c
+        <include refid="where_sql"/>
+        limit #{start},#{rows}
+    </select>
+
+    <select id="queryClientFromEmp" resultMap="BaseResultMap">
+        select c.*
+        from client c
+        left join employee e
+        on c.inputuser_id=e.id
+        where e.id=#{id}
+    </select>
+
+    <update id="updateByTrack">
+    update client
+    set
+    trackTime=#{tracktime},
+    lastTrackDate=#{lasttrackdate},
+    interviewTime=#{interviewtime},
+    nextTime=#{nexttime},
+    trackState=1
+    where id=#{id}
+    </update>
+
+    <!--<select id="selectClientFromEmp" resultMap="BaseResultMap">
+       select c.*,e.username
+       from client c
+       LEFT JOIN employee e
+       ON c.inputUser_id=e.id
+       where c.inputUser_id=#{}
+    </select>-->
+
+    <select id="selectListForTrackForm" resultType="org.memory.ischool.domain.Client">
+        SELECT * FROM client WHERE status = "1"
+    </select>
+
+    <update id="inPool">
+        UPDATE client
+        SET
+        marketUser_id = null,
+        inPoolTime = #{inpooltime},
+        inPoolReason = #{inpoolreason},
+        status = "7"
+        where id = #{id}
+    </update>
+    <update id="transferByClientId">
+        UPDATE client
+        SET
+        marketUser_id = #{aimId}
+        where id = #{id}
+    </update>
+    <update id="leftPool">
+        UPDATE client
+        SET
+        status=#{status},
+        marketUser_id=#{marketuser.id},
+        inputTime = #{inputtime},
+        remark=#{remark}
+        where id=#{id}
+    </update>
+
+    <update id="changeFormal">
+         UPDATE client
+        SET
+        status='2'
+        where id=#{id}
+    </update>
+</mapper>

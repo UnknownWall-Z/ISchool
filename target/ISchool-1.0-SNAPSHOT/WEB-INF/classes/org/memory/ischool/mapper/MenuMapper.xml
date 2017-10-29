@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.MenuMapper" >
+  <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Menu" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="text" property="text" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <association property="parent" column="parent_id" javaType="org.memory.ischool.domain.Menu" select="selectByPrimaryKey"></association>
+    <collection property="children" ofType="org.memory.ischool.domain.Menu" select="selectChildren" column="id"></collection>
+  </resultMap>
+
+  <select id="selectSystemMenu" resultMap="BaseResultMap">
+    select * from menu where parent_id is null
+  </select>
+
+
+  <select id="selectChildren" resultType="org.memory.ischool.domain.Menu">
+    select * from menu where parent_id = #{id}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from menu
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert" parameterType="org.memory.ischool.domain.Menu" useGeneratedKeys="true" keyProperty="id" >
+    insert into menu (text, url, parent_id
+      )
+    values (#{text,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{parent.id,jdbcType=BIGINT}
+      )
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.Menu" >
+    update menu
+    set text = #{text,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      parent_id = #{parent.id,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, text, url, parent_id
+    from menu
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, text, url, parent_id
+    from menu
+  </select>
+
+  <select id="getUrl" resultType="String">
+    SELECT url FROM menu WHERE text=#{moduleName}
+  </select>
+</mapper>

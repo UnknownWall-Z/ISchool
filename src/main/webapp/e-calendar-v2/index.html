@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="css/jquery.e-calendar.css" />
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript" src="js/jquery.e-calendar.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var times=[new Date(2017, new Date().getMonth(), 15, 15),
+                new Date(2017, new Date().getMonth(), 16, 16),
+                new Date(2017, new Date().getMonth(), 17, 17)];
+            $('#calendar').eCalendar({
+                yearRange:['2015','2016','2017','2018','2019','2020','2021'],   //年的下拉框
+                weekDays: ['日', '一', '二', '三', '四', '五', '六'],
+                months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],//月的下拉框
+                // textArrows: { previous: '<', next: '>' },    //改为图片< >
+                eventTitle: '日程列表',
+                //初始化数据 month:2016-9格式
+                initData: function (settings, month) {
+
+                    times=[new Date(2017, new Date().getMonth(), 15, 15),
+                        new Date(2017, new Date().getMonth(), 16, 16),
+                        new Date(2017, new Date().getMonth(), 17, 17)]
+                    var jj="[";
+                        for(var i in times){
+                            jj+='{datetime:new Date("'+times[i]+'".replace(/-/g,"/"))}'
+                            if(i!=times.length){
+                                jj+=",";
+                            }
+                        }
+                        jj+="]";
+                    jj=eval(jj);
+                    settings.events = jj
+                }
+            });
+        });
+        function sign() {
+            $(document).ready(function () {
+                $('#calendar').eCalendar({
+                    initData: function (settings, month) {
+                        times=[new Date(2017, new Date().getMonth(), 15, 15),
+                            new Date(2017, new Date().getMonth(), 16, 16),
+                            new Date(2017, new Date().getMonth(), 17, 17)]
+                        times.push(new Date());
+
+                        var jj="[";
+                        for(var i in times){
+                            jj+='{datetime:new Date("'+times[i]+'".replace(/-/g,"/"))}'
+                            if(i!=times.length){
+                                jj+=",";
+                            }
+                        }
+                        jj+="]";
+                        jj=eval(jj);
+                        settings.events = jj
+                    }
+                });
+
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div id="calendar" class="c-grid-title"></div>
+</body>
+
+</html>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.InformationMapper">
+    <select id="get" resultType="org.memory.ischool.domain.Information">
+      SELECT e.username,e.realname,e.email,e.tel,d.name,a.ondutystate FROM employee e
+      LEFT JOIN department d ON e.dept_id=d.id
+      LEFT JOIN attendance a ON a.employee_id=e.id
+      WHERE e.id=#{employeeId} ORDER BY a.currenttime DESC LIMIT 1
+    </select>
+</mapper>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="echarts/echarts-all.js"></script>
+    <script type="text/javascript" src="echarts/jquery.js"></script>
+    <script>
+        $(function () {
+            // 准备好的dom 初始化echarts图表
+            var myChart = echarts.init(document.getElementById('main'));
+            //---------------------------------
+            option = {
+                title : {
+                    text: '战栗报表',
+                   //subtext: '纯属虚构'
+//                    textStyle: {
+//                        color: '#2d4658'
+//                },
+                },
+                tooltip : {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:['林纳斯','汤姆'],
+                },
+                toolbox: {
+                    show : true,
+                    feature : {
+                        mark : {show: true},
+                        dataView : {show: true, readOnly: false},
+                        magicType : {show: true, type: ['line', 'bar']},
+                        restore : {show: true},
+                        saveAsImage : {show: true}
+                    }
+                },
+                calculable : true,
+                xAxis : [
+                    {
+                        type : 'category',
+                        data : ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+                    }
+                ],
+                yAxis : [
+                    {
+                        type : 'value'
+                    }
+                ],
+                series : [
+                    {
+                        name:'林纳斯',
+                        type:'bar',
+                        data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 3.3],
+                        markPoint : {
+                            data : [
+                                {type : 'max', name: '最大值'},
+                                {type : 'min', name: '最小值'}
+                            ]
+                        },
+                        markLine : {
+                            data : [
+                                {type : 'average', name: '平均值'}
+                            ]
+                        }
+                    },
+                    {
+                        name:'汤姆',
+                        type:'bar',
+                        data:[2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
+                        markPoint : {
+                            data : [
+                                {name : '年最高', value : 182.2, xAxis: 7, yAxis: 183, symbolSize:18},
+                                {name : '年最低', value : 2.3, xAxis: 11, yAxis: 3}
+                            ]
+                        },
+                        markLine : {
+                            data : [
+                                {type : 'average', name : '平均值'}
+                            ]
+                        }
+                    }
+                ]
+            };
+
+            //---------------------------------
+            // 为echarts对象加载数据
+            myChart.setOption(option);
+
+        });
+    </script>
+</head>
+<body>
+
+<div id="main" style="min-width: 750px; height: 400px; margin: 0 auto;background-color:#2bb4e8 "></div>
+
+</body>
+</html>

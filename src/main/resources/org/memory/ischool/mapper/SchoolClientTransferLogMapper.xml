@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.SchoolClientTransferLogMapper">
+    <resultMap id="BaseResultMap" type="org.memory.ischool.domain.SchoolClientTransferLog">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="inputTime" property="inputTime" jdbcType="TIMESTAMP"/>
+        <result column="auditState" property="auditState" jdbcType="BIT"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="auditMsg" property="auditMsg" jdbcType="VARCHAR"/>
+        <result column="auditTime" property="auditTime" jdbcType="TIMESTAMP"/>
+        <result column="result" property="result"/>
+
+        <association column="clientSchool_id" property="clientSchool"
+                     javaType="org.memory.ischool.domain.SchoolClient" columnPrefix="sc_">
+            <result column="id" property="id"/>
+            <result column="name" property="name"/>
+            <association column="tracer_id" property="tracer" javaType="org.memory.ischool.domain.Employee"
+                         select="org.memory.ischool.mapper.EmployeeMapper.selectByPrimaryKey">
+            </association>
+        </association>
+
+        <association column="outEmp_id" property="outEmp"
+                     javaType="org.memory.ischool.domain.Employee" columnPrefix="out_">
+            <result column="id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+
+        <association column="inEmp_id" property="inEmp"
+                     javaType="org.memory.ischool.domain.Employee" columnPrefix="in_">
+            <result column="id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+
+        <association column="manager_id" property="manager"
+                     javaType="org.memory.ischool.domain.Employee" columnPrefix="mng_">
+            <result column="id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from schoolclienttransferlog
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="org.memory.ischool.domain.SchoolClientTransferLog" useGeneratedKeys="true"
+            keyProperty="id">
+    insert into schoolclienttransferlog (outEmp_id, inEmp_id, inputTime, 
+      auditState, clientSchool_id, remark, auditMsg,
+      manager_id, auditTime,result)
+    values (#{outEmp.id,jdbcType=BIGINT}, #{inEmp.id,jdbcType=BIGINT}, #{inputTime,jdbcType=TIMESTAMP}, 
+      #{auditState,jdbcType=BIT}, #{clientSchool.id,jdbcType=BIGINT}, #{remark,jdbcType=VARCHAR},
+      #{auditMsg,jdbcType=VARCHAR},
+      #{manager.id,jdbcType=BIGINT}, #{auditTime,jdbcType=TIMESTAMP},#{result})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.SchoolClientTransferLog">
+    update schoolclienttransferlog
+    set outEmp_id = #{outEmp.id,jdbcType=BIGINT},
+      inEmp_id = #{inEmp.id,jdbcType=BIGINT},
+      inputTime = #{inputTime,jdbcType=TIMESTAMP},
+      auditState = #{auditState,jdbcType=BIT},
+      clientSchool_id = #{clientSchool.id,jdbcType=BIGINT},
+      remark = #{remark,jdbcType=VARCHAR},
+      remark = #{auditMsg,jdbcType=VARCHAR},
+      manager_id = #{manager.id,jdbcType=BIGINT},
+      auditTime = #{auditTime,jdbcType=TIMESTAMP},
+      result=#{result}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <sql id="base_column">
+        log.id,
+        log.outEmp_id,
+        log.inEmp_id,
+        log.inputTime,
+        log.auditState,
+        log.clientSchool_id,
+        log.remark,
+        log.manager_id,
+        log.auditTime,
+        log.auditMsg,
+        result,
+
+        `in`.id AS in_id,
+        `in`.username AS in_username,
+
+        `out`.id AS out_id,
+        `out`.username AS out_username,
+
+        mng.id AS mng_id,
+        mng.username AS mng_username,
+
+        sc.id AS sc_id,
+        sc.tracer_id AS sc_tracer_id,
+        sc.`name` AS sc_name
+    </sql>
+    <sql id="base_table">
+        schoolclienttransferlog AS log
+        LEFT JOIN employee AS `in` ON log.inEmp_id = `in`.id
+        LEFT JOIN employee AS `out` ON log.outEmp_id = `out`.id
+        LEFT JOIN employee AS mng ON log.manager_id = mng.id
+        LEFT JOIN schoolclient AS sc ON log.clientSchool_id = sc.id
+    </sql>
+
+    <sql id="base_where">
+        <where>
+            <if test="auditState==true">
+                and auditState=1
+            </if>
+            <if test="auditState==false">
+                and auditState=0
+            </if>
+        </where>
+
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="base_column"/>
+        from
+        <include refid="base_table"/>
+        where log.id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="base_column"/>
+        from
+        <include refid="base_table"/>
+    </select>
+
+    <select id="getListData" resultMap="BaseResultMap">
+        select
+        <include refid="base_column"/>
+        from
+        <include refid="base_table"/>
+        <include refid="base_where"/>
+        limit #{start},#{rows}
+    </select>
+
+    <select id="getTotalCount" resultType="long">
+        select count(*)
+        from
+        <include refid="base_table"/>
+        <include refid="base_where"/>
+    </select>
+    <update id="audit">
+        update schoolclienttransferlog
+        SET
+        manager_id=#{manager.id},
+        auditState=#{auditState},
+        auditTime=#{auditTime},
+        result=#{result},
+        auditMsg=#{auditMsg}
+        where id=#{id}
+    </update>
+
+
+</mapper>

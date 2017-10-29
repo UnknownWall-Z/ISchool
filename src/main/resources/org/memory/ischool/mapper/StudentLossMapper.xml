@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.StudentLossMapper" >
+  <resultMap id="BaseResultMap" type="org.memory.ischool.domain.StudentLoss" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="qq" property="qq" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="studydays" property="studydays" jdbcType="INTEGER" />
+    <result column="lossStage" property="lossstage" jdbcType="VARCHAR" />
+    <result column="lossReason" property="lossreason" jdbcType="VARCHAR" />
+    <result column="lossDate" property="lossdate" jdbcType="DATE" />
+    <result column="refund" property="refund" jdbcType="BIT" />
+    <result column="state" property="state" jdbcType="VARCHAR" />
+    <association property="lossclass" javaType="org.memory.ischool.domain.Studentclass" columnPrefix="c_">
+      <id column="id" property="id" jdbcType="BIGINT" />
+      <result column="classname" property="classname" jdbcType="VARCHAR" />
+    </association>
+    <association property="marketuser" javaType="org.memory.ischool.domain.Employee" columnPrefix="em_">
+      <id column="id" property="id" jdbcType="BIGINT" />
+      <result column="realname" property="realname" jdbcType="VARCHAR" />
+    </association>
+    <association property="handler" javaType="org.memory.ischool.domain.Employee" columnPrefix="eh_">
+      <id column="id" property="id" jdbcType="BIGINT" />
+      <result column="realname" property="realname" jdbcType="VARCHAR" />
+    </association>
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from studentloss
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert" parameterType="org.memory.ischool.domain.StudentLoss" useGeneratedKeys="true" keyProperty="id" >
+    insert into studentloss (name, qq, tel, 
+      studydays, lossClass, lossStage, 
+      lossReason, lossDate, handler, 
+      marketuser, refund, state
+      )
+    values (#{name,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, 
+      #{studydays,jdbcType=INTEGER}, #{lossclass.id,jdbcType=BIGINT}, #{lossstage,jdbcType=VARCHAR},
+      #{lossreason,jdbcType=VARCHAR}, #{lossdate,jdbcType=DATE}, #{handler.id,jdbcType=BIGINT},
+      #{marketuser.id,jdbcType=BIGINT}, #{refund,jdbcType=BIT}, #{state,jdbcType=VARCHAR}
+      )
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.StudentLoss" >
+    update studentloss
+    set name = #{name,jdbcType=VARCHAR},
+      qq = #{qq,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      studydays = #{studydays,jdbcType=INTEGER},
+      lossClass = #{lossclass.id,jdbcType=BIGINT},
+      lossStage = #{lossstage,jdbcType=VARCHAR},
+      lossReason = #{lossreason,jdbcType=VARCHAR},
+      lossDate = #{lossdate,jdbcType=DATE},
+      handler = #{handler.id,jdbcType=BIGINT},
+      marketuser = #{marketuser.id,jdbcType=BIGINT},
+      refund = #{refund,jdbcType=BIT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, name, qq, tel, studydays, lossClass, lossStage, lossReason, lossDate, 
+    handler, marketuser, refund, state
+    from studentloss
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select s.*,em.id em_id,em.realname em_realname,eh.id eh_id,eh.realname eh_realname,c.id c_id,c.classname c_classname from studentloss s
+    left join employee em on s.marketuser = em.id
+    left join employee eh on s.handler = eh.id
+    left join studentclass c on s.lossclass = c.id
+  </select>
+
+  <sql id="condition">
+    <where>
+      <if test="keyword != null and keyword != ''">
+        (
+        s.name like concat("%",#{keyword},"%")
+        or s.qq like concat("%",#{keyword},"%")
+        or s.tel like concat("%",#{keyword},"%")
+        )
+      </if>
+    </where>
+  </sql>
+
+  <select id="getTotalCount" resultType="long">
+    select count(s.id) from studentloss s
+    <include refid="condition"/>
+  </select>
+
+  <select id="getListData" resultMap="BaseResultMap">
+    select s.*,em.id em_id,em.realname em_realname,eh.id eh_id,eh.realname eh_realname,c.id c_id,c.classname c_classname from studentloss s
+    left join employee em on s.marketuser = em.id
+    left join employee eh on s.handler = eh.id
+    left join studentclass c on s.lossclass = c.id
+    <include refid="condition"/>
+    limit #{start},#{rows}
+  </select>
+
+</mapper>

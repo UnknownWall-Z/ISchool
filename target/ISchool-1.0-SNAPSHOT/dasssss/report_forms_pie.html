@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="echarts/echarts-all.js"></script>
+    <script type="text/javascript" src="echarts/jquery.js"></script>
+    <script>
+        $(function () {
+            // 准备好的dom 初始化echarts图表
+            var myChart = echarts.init(document.getElementById('main'));
+            option = {
+                title : {
+                    text: '使用率',
+                    x:'center'
+                },
+                tooltip : {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                },
+                legend: {
+                    orient : 'vertical',
+                    x : 'left',
+                    data:['c','java','python','ruby','c++']
+                },
+                toolbox: {
+                    show : true,
+                    feature : {
+                        dataView : {show: true, readOnly: false},
+                        magicType : {
+                            type: ['pie']
+                        },
+                        restore : {show: true},
+                        saveAsImage : {show: true}
+                    }
+                },
+                calculable : true,
+                series : [
+                    {
+                        name:'访问来源',
+                        type:'pie',
+                        radius : '55%',
+                        center: ['50%', '60%'],
+                        data:[
+                            {value:3350, name:'c'},
+                            {value:3100, name:'java'},
+                            {value:2340, name:'python'},
+                            {value:135, name:'ruby'},
+                            {value:1548, name:'c++'}
+                        ]
+                    }
+                ]
+            };
+
+            //---------------------------------
+            // 为echarts对象加载数据
+            myChart.setOption(option);
+
+        });
+    </script>
+</head>
+<body>
+
+<div id="main" style="min-width: 750px; height: 400px; margin: 0 auto;background-color:#2bb4e8 "></div>
+
+</body>
+</html>

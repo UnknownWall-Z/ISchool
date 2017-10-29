@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.ExpenditureMapper" >
+  <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Expenditure" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="date" property="date" jdbcType="DATE" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="summary" property="summary" jdbcType="VARCHAR" />
+    <result column="paymethod" property="paymethod" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="VARCHAR" />
+    <result column="paytype" property="paytype" jdbcType="VARCHAR" />
+    <result column="subclass" property="subclass" jdbcType="VARCHAR" />
+    <result column="documentnumber" property="documentnumber" jdbcType="VARCHAR" />
+    <result column="subject" property="subject" jdbcType="VARCHAR" />
+    <association property="handler" javaType="org.memory.ischool.domain.Employee" columnPrefix="eh_">
+      <id column="id" property="id" jdbcType="BIGINT" />
+      <result column="realname" property="realname" jdbcType="DECIMAL" />
+    </association>
+    <association property="auditor" javaType="org.memory.ischool.domain.Employee" columnPrefix="ea_">
+      <id column="id" property="id" jdbcType="BIGINT" />
+      <result column="realname" property="realname" jdbcType="DECIMAL" />
+    </association>
+    <association property="cashier" javaType="org.memory.ischool.domain.Employee" columnPrefix="ec_">
+      <id column="id" property="id" jdbcType="BIGINT" />
+      <result column="realname" property="realname" jdbcType="DECIMAL" />
+    </association>
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from expenditure
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert" parameterType="org.memory.ischool.domain.Expenditure" useGeneratedKeys="true" keyProperty="id" >
+    insert into expenditure (state, date, amount, summary, handler,
+      cashier, paymethod, paytype, 
+      subclass, documentnumber, subject, 
+      auditor)
+    values (0, #{date,jdbcType=DATE}, #{amount,jdbcType=DECIMAL}, #{summary,jdbcType=VARCHAR}, #{handler.id,jdbcType=BIGINT},
+      #{cashier.id,jdbcType=BIGINT}, #{paymethod,jdbcType=VARCHAR}, #{paytype,jdbcType=VARCHAR},
+      #{subclass,jdbcType=VARCHAR}, #{documentnumber,jdbcType=VARCHAR}, #{subject,jdbcType=VARCHAR},
+      #{auditor.id,jdbcType=BIGINT})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.Expenditure" >
+        update expenditure
+        set amount = #{amount,jdbcType=DECIMAL},
+          date = #{date,jdbcType=DATE},
+          summary = #{summary,jdbcType=VARCHAR},
+          handler = #{handler.id,jdbcType=BIGINT},
+          cashier = #{cashier.id,jdbcType=BIGINT},
+          paymethod = #{paymethod,jdbcType=VARCHAR},
+          paytype = #{paytype,jdbcType=VARCHAR},
+          subclass = #{subclass,jdbcType=VARCHAR},
+          documentnumber = #{documentnumber,jdbcType=VARCHAR},
+          subject = #{subject,jdbcType=VARCHAR},
+          auditor = #{auditor.id,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="changestate">
+     update expenditure
+      set state = 1,auditor = #{auditorId}
+      where id = #{id}
+  </update>
+
+  <update id="cancelaudit">
+     update expenditure
+      set state = 0,auditor = null
+      where id = #{id}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select e.*,eh.id eh_id,eh.realname eh_realname,ea.id ea_id,ea.realname ea_realname,ec.id ec_id, ec.realname ec_realname from expenditure e
+    left join employee eh on e.handler = eh.id
+    left join employee ea on e.auditor = ea.id
+    left join employee ec on e.cashier = ec.id
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    select e.*,eh.id eh_id,eh.realname eh_realname,ea.id ea_id,ea.realname ea_realname,ec.id ec_id, ec.realname ec_realname from expenditure e
+    left join employee eh on e.handler = eh.id
+    left join employee ea on e.auditor = ea.id
+    left join employee ec on e.cashier = ec.id
+  </select>
+
+  <sql id="condition">
+    <where>
+      <if test="keyword != null and keyword != ''">
+        (
+        eh.realname like concat("%",#{keyword},"%")
+        or ea.realname like concat("%",#{keyword},"%")
+        or ec.realname like concat("%",#{keyword},"%")
+        or summary like concat("%",#{keyword},"%")
+        or paymethod like concat("%",#{keyword},"%")
+        or subclass like concat("%",#{keyword},"%")
+        or subject like concat("%",#{keyword},"%")
+        )
+      </if>
+      <if test="beginDate != null">
+        and date >= #{beginDate}
+      </if>
+      <if test="endDate != null">
+        and date &lt;= #{endDate}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getTotalCount" resultType="long">
+    select count(e.id) from expenditure e
+    left join employee eh on e.handler = eh.id
+    left join employee ea on e.auditor = ea.id
+    left join employee ec on e.cashier = ec.id
+    <include refid="condition"/>
+  </select>
+
+  <select id="getListData" resultMap="BaseResultMap">
+    select e.*,eh.id eh_id,eh.realname eh_realname,ea.id ea_id,ea.realname ea_realname,ec.id ec_id, ec.realname ec_realname from expenditure e
+    left join employee eh on e.handler = eh.id
+    left join employee ea on e.auditor = ea.id
+    left join employee ec on e.cashier = ec.id
+    <include refid="condition"/>
+    limit #{start},#{rows}
+  </select>
+
+</mapper>

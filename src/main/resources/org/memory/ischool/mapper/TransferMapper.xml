@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.TransferMapper" >
+  <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Transfer" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="transferTime" property="transfertime" jdbcType="DATE" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <association column="aimOwner_id" property="aimowner"
+                 select="org.memory.ischool.mapper.EmployeeMapper.selectByPrimaryKey"/>
+    <association column="preOwner_id" property="preowner"
+                 select="org.memory.ischool.mapper.EmployeeMapper.selectByPrimaryKey"/>
+    <association property="client" column="client_id" javaType="Client"
+                 select="org.memory.ischool.mapper.ClientMapper.selectByPrimaryKey"/>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from transfer
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="org.memory.ischool.domain.Transfer" useGeneratedKeys="true" keyProperty="id" >
+    insert into transfer (client_id, transferTime, reason, 
+      preOwner_id, aimOwner_id)
+    values (#{client.id,jdbcType=BIGINT}, #{transfertime,jdbcType=DATE}, #{reason,jdbcType=VARCHAR}, 
+      #{preowner.id,jdbcType=BIGINT}, #{aimowner.id,jdbcType=BIGINT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.Transfer" >
+    update transfer
+    set client_id = #{client.id,jdbcType=BIGINT},
+      transferTime = #{transfertime,jdbcType=DATE},
+      reason = #{reason,jdbcType=VARCHAR},
+      preOwner_id = #{preowner.id,jdbcType=BIGINT},
+      aimOwner_id = #{aimowner.id,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, client_id, transferTime, reason, preOwner_id, aimOwner_id
+    from transfer
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <sql id="conditionSql">
+    <where>
+      <if test="name!=null and name !=''">
+        and name like ('%',#{name},'%')
+      </if>
+      <if test="aimOwnerId!=null">
+       and aimOwner_Id = #{aimOwnerId}
+      </if>
+      <if test="preOwnerId!=null">
+        and  preOwner_Id = #{preOwnerId}
+      </if>
+      <if test="beginTime!=null">
+        and transferTime &gt; #{beginTime}
+      </if>
+      <if test="endTime!=null">
+        and transferTime &lt; #{endTime}
+      </if>
+      <if test="reason != null and reason != ''">
+        and reason like ('%',#{reason},'%')
+      </if>
+    </where>
+  </sql>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, client_id, transferTime, reason, preOwner_id, aimOwner_id
+    from transfer
+    <include refid="conditionSql"/>
+  </select>
+  <select id="getListData" resultMap="BaseResultMap">
+    select * from transfer
+    <include refid="conditionSql"/>
+    limit #{start},#{rows}
+  </select>
+
+  <select id="getTotalCount" resultType="long">
+    select count(id) from transfer
+  </select>
+</mapper>

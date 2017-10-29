@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.StudentMapper" >
+  <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Student" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="QQ" property="qq" jdbcType="VARCHAR" />
+    <result column="admission" property="admission" jdbcType="DATE" />
+    <result column="upordowndate" property="upordowndate" jdbcType="DATE" />
+    <result column="lasturgedate" property="lasturgedate" jdbcType="DATE" />
+    <result column="urgedate" property="urgedate" jdbcType="DATE" />
+    <result column="lastpaytime" property="lastpaytime"/>
+    <result column="urgetimes" property="urgetimes" jdbcType="INTEGER" />
+    <result column="origin" property="origin" jdbcType="VARCHAR" />
+    <result column="age" property="age" jdbcType="INTEGER" />
+    <result column="sex" property="sex" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="addressNow" property="addressnow" jdbcType="VARCHAR" />
+    <result column="addressHome" property="addresshome" jdbcType="VARCHAR" />
+    <result column="university" property="university" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="education" property="education" jdbcType="VARCHAR" />
+    <result column="major" property="major" jdbcType="VARCHAR" />
+    <result column="workingLife" property="workinglife" jdbcType="INTEGER" />
+    <result column="englishLevel" property="englishlevel" jdbcType="VARCHAR" />
+    <result column="payMethod" property="paymethod" jdbcType="VARCHAR" />
+    <result column="clientType" property="clienttype" jdbcType="VARCHAR" />
+    <result column="planTuition" property="plantuition" jdbcType="DECIMAL" />
+    <result column="discountAmount" property="discountamount" jdbcType="DECIMAL" />
+    <result column="realTuition" property="realtuition" jdbcType="VARCHAR" />
+    <result column="otherFee" property="otherfee" jdbcType="DECIMAL" />
+    <result column="otherDiscount" property="otherdiscount" jdbcType="DECIMAL" />
+    <result column="discountRemark" property="discountremark" jdbcType="VARCHAR" />
+    <result column="totalFee" property="totalfee" jdbcType="DECIMAL" />
+    <result column="payedFee" property="payedfee" jdbcType="DECIMAL" />
+    <result column="ownedFee" property="ownedfee" jdbcType="DECIMAL" />
+    <result column="finished" property="finished" jdbcType="BIT" />
+    <result column="headImgPath" property="headimgpath" jdbcType="VARCHAR" />
+    <result column="IDNumber" property="idnumber" jdbcType="VARCHAR" />
+    <result column="emergencyContact" property="emergencycontact" jdbcType="VARCHAR" />
+    <result column="emergencyTel" property="emergencytel" jdbcType="VARCHAR" />
+    <result column="workIntention" property="workintention" jdbcType="VARCHAR" />
+    <result column="workExperience" property="workexperience" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="VARCHAR" />
+    <association property="marketuser" javaType="org.memory.ischool.domain.Employee" columnPrefix="e_">
+      <id column="id" property="id"></id>
+      <result column="realname" property="realname"></result>
+    </association>
+    <association property="studentclass" javaType="org.memory.ischool.domain.Studentclass" columnPrefix="c_">
+      <id column="id" property="id"></id>
+      <result column="classname" property="classname"></result>
+    </association>
+    <association property="oldclass" javaType="org.memory.ischool.domain.Studentclass" columnPrefix="oc_">
+      <id column="id" property="id"></id>
+      <result column="classname" property="classname"></result>
+    </association>
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from student
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+
+  <insert id="insert" parameterType="org.memory.ischool.domain.Student" useGeneratedKeys="true" keyProperty="id" >
+    insert into student (username, marketUser, QQ, 
+      admission, origin, age, 
+      sex, tel, addressNow, 
+      addressHome, university, major, 
+      workingLife, englishLevel, studentclass, 
+      payMethod, clientType, planTuition, 
+      discountAmount, realTuition, otherFee, 
+      otherDiscount, discountRemark, totalFee, 
+      payedFee, ownedFee, finished, 
+      headImgPath, IDNumber, emergencyContact, 
+      emergencyTel, workIntention, workExperience, state, email, education, upordowndate,oldclass,lasturgedate ,urgedate,lastpaytime,
+      urgetimes
+      )
+    values (#{username,jdbcType=VARCHAR}, #{marketuser.id,jdbcType=BIGINT}, #{qq,jdbcType=VARCHAR},
+      #{admission,jdbcType=DATE}, #{origin,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER}, 
+      #{sex,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{addressnow,jdbcType=VARCHAR}, 
+      #{addresshome,jdbcType=VARCHAR}, #{university,jdbcType=VARCHAR}, #{major,jdbcType=VARCHAR}, 
+      #{workinglife,jdbcType=INTEGER}, #{englishlevel,jdbcType=VARCHAR}, #{studentclass.id,jdbcType=VARCHAR},
+      #{paymethod,jdbcType=VARCHAR}, #{clienttype,jdbcType=VARCHAR}, #{plantuition,jdbcType=DECIMAL}, 
+      #{discountamount,jdbcType=DECIMAL}, #{realtuition,jdbcType=VARCHAR}, #{otherfee,jdbcType=DECIMAL}, 
+      #{otherdiscount,jdbcType=DECIMAL}, #{discountremark,jdbcType=VARCHAR}, #{totalfee,jdbcType=DECIMAL}, 
+      #{payedfee,jdbcType=DECIMAL}, #{ownedfee,jdbcType=DECIMAL}, #{finished,jdbcType=BIT}, 
+      #{headimgpath,jdbcType=VARCHAR}, #{idnumber,jdbcType=VARCHAR}, #{emergencycontact,jdbcType=VARCHAR}, 
+      #{emergencytel,jdbcType=VARCHAR}, #{workintention,jdbcType=VARCHAR}, #{workexperience,jdbcType=VARCHAR},
+      "正常",#{email,jdbcType=VARCHAR},#{education,jdbcType=VARCHAR},#{upordowndate,jdbcType=DATE},
+      #{oldclass.id,jdbcType=BIGINT},#{lasturgedate,jdbcType=DATE},#{urgedate,jdbcType=DATE},#{lastpaytime},#{urgetimes,jdbcType=INTEGER}
+      )
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.Student" >
+    update student
+    set username = #{username,jdbcType=VARCHAR},
+      marketUser = #{marketuser.id,jdbcType=BIGINT},
+      QQ = #{qq,jdbcType=VARCHAR},
+      admission = #{admission,jdbcType=DATE},
+      origin = #{origin,jdbcType=VARCHAR},
+      age = #{age,jdbcType=INTEGER},
+      sex = #{sex,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      addressNow = #{addressnow,jdbcType=VARCHAR},
+      addressHome = #{addresshome,jdbcType=VARCHAR},
+      university = #{university,jdbcType=VARCHAR},
+      state = #{state,jdbcType=VARCHAR},
+      major = #{major,jdbcType=VARCHAR},
+      workingLife = #{workinglife,jdbcType=INTEGER},
+      englishLevel = #{englishlevel,jdbcType=VARCHAR},
+      studentclass = #{studentclass.id,jdbcType=BIGINT},
+      payMethod = #{paymethod,jdbcType=VARCHAR},
+      clientType = #{clienttype,jdbcType=VARCHAR},
+      planTuition = #{plantuition,jdbcType=DECIMAL},
+      discountAmount = #{discountamount,jdbcType=DECIMAL},
+      realTuition = #{realtuition,jdbcType=VARCHAR},
+      otherFee = #{otherfee,jdbcType=DECIMAL},
+      otherDiscount = #{otherdiscount,jdbcType=DECIMAL},
+      discountRemark = #{discountremark,jdbcType=VARCHAR},
+      totalFee = #{totalfee,jdbcType=DECIMAL},
+      payedFee = #{payedfee,jdbcType=DECIMAL},
+      ownedFee = #{ownedfee,jdbcType=DECIMAL},
+      finished = #{finished,jdbcType=BIT},
+      headImgPath = #{headimgpath,jdbcType=VARCHAR},
+      IDNumber = #{idnumber,jdbcType=VARCHAR},
+      emergencyContact = #{emergencycontact,jdbcType=VARCHAR},
+      emergencyTel = #{emergencytel,jdbcType=VARCHAR},
+      workIntention = #{workintention,jdbcType=VARCHAR},
+      workExperience = #{workexperience,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      education = #{education,jdbcType=VARCHAR},
+      upordowndate = #{upordowndate,jdbcType=DATE},
+      lasturgedate = #{lasturgedate,jdbcType=DATE},
+      urgedate = #{urgedate,jdbcType=DATE},
+      lastpaytime = #{lastpaytime},
+      urgetimes = #{urgetimes,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="changeClass">
+    update student
+    set oldclass = #{oldclass,jdbcType=BIGINT},
+    studentclass = #{newclass,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="upordownDelete">
+    update student
+    set oldclass = null,
+    studentclass = #{nowclass,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="updateUpordown">
+     update student
+    set username = #{username,jdbcType=VARCHAR},
+      QQ = #{qq,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      oldclass = #{oldclass.id,jdbcType=BIGINT},
+      studentclass = #{studentclass.id,jdbcType=BIGINT},
+      clientType = #{clienttype,jdbcType=VARCHAR},
+      state = #{state,jdbcType=VARCHAR},
+      otherFee = #{otherfee,jdbcType=DECIMAL},
+      totalFee = #{totalfee,jdbcType=DECIMAL},
+      upordowndate = #{upordowndate,jdbcType=DATE}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="dropout">
+    update student set state = "已休学" where id = #{id}
+  </update>
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select s.*,e.id e_id,e.realname e_realname,c.id c_id,c.classname c_classname,oc.id oc_id,oc.classname oc_classname from student s
+    left join employee e on s.marketuser = e.id
+    left join studentclass c on s.studentclass = c.id
+    left join studentclass oc on s.oldclass = oc.id
+    where s.id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="getReceiptByRealName" resultType="org.memory.ischool.domain.Student">
+    select s.*,e.id e_id,e.realname e_realname,c.id c_id,c.classname c_classname,oc.id oc_id,oc.classname oc_classname from student s
+    left join employee e on s.marketuser = e.id
+    left join studentclass c on s.studentclass = c.id
+    left join studentclass oc on s.oldclass = oc.id
+    where s.username = #{name}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select s.*,e.id e_id,e.realname e_realname,c.id c_id,c.classname c_classname from student s
+    left join employee e on s.marketuser = e.id
+    left join studentclass c on s.studentclass = c.id
+  </select>
+
+  <select id="selectAllUpordown" resultMap="BaseResultMap">
+    select s.*,e.id e_id,e.realname e_realname,c.id c_id,c.classname c_classname,oc.id oc_id,oc.classname oc_classname from student s
+    left join employee e on s.marketuser = e.id
+    left join studentclass c on s.studentclass = c.id
+    left join studentclass oc on s.oldclass = oc.id
+    where oldclass is not null
+  </select>
+
+
+  <sql id="condition">
+    <where>
+      <if test="keyword != null and keyword != ''">
+        (
+        s.username like concat("%",#{keyword},"%")
+        or s.addressNow like concat("%",#{keyword},"%")
+        or s.addressHome like concat("%",#{keyword},"%")
+        or s.tel like concat("%",#{keyword},"%")
+        )
+      </if>
+      <if test="upordown == true">
+        and oldclass is not null
+      </if>
+      <if test="classId != null">
+        and studentclass = #{classId}
+      </if>
+      <if test="state != null and state != ''">
+        and s.state = #{state}
+      </if>
+	   <if test="beginTime != null and keyword != ''">
+                and admintion &gt;=beginTime
+        </if>
+        <if test="endTime != null and keyword != ''">
+                and admintion &lt;=endTime
+        </if>
+    </where>
+  </sql>
+
+  <select id="getTotalCount" resultType="long">
+    select count(s.id) from student s
+    <include refid="condition"/>
+  </select>
+
+  <select id="getListData" resultMap="BaseResultMap">
+    select s.*,e.id e_id,e.realname e_realname,c.id c_id,c.classname c_classname,oc.id oc_id,oc.classname oc_classname from student s
+    left join employee e on s.marketuser = e.id
+    left join studentclass c on s.studentclass = c.id
+    left join studentclass oc on s.oldclass = oc.id
+    <include refid="condition"/>
+    limit #{start},#{rows}
+  </select>
+   
+    <select id="queryChart" resultMap="org.memory.ischool.mapper.StudentChartMapper.BaseResultMap">
+        SELECT ${groupType} groupType,
+        SUM(s.payedfee) totalPayedfee,
+        SUM(s.ownedfee) totalOwnedfee,
+        SUM(s.finished) totalFinished,
+        s.id s_id
+        FROM
+        student AS s
+        LEFT JOIN employee AS e ON s.marketuser = e.id
+        <include refid="condition"/>
+        GROUP BY ${groupType}
+        ORDER BY s.id
+        limit #{start},#{rows}
+    </select>
+
+    <select id="getChartCount" resultType="long">
+        select count(*)
+        from (
+        SELECT ${groupType} groupType,
+        SUM(s.payedfee) totalPayedfee,
+        SUM(s.ownedfee) totalOwnedfee,
+        SUM(s.finished) totalFinished,
+        s.id s_id
+        FROM
+        student AS s
+        LEFT JOIN employee AS e ON s.marketuser = e.id
+        <include refid="condition"/>
+        GROUP BY ${groupType}
+        ) as total
+    </select>
+
+    <select id="selectAllChart" resultMap="org.memory.ischool.mapper.StudentChartMapper.BaseResultMap">
+        SELECT ${groupType} groupType,
+        SUM(s.payedfee) totalPayedfee,
+        SUM(s.ownedfee) totalOwnedfee,
+        SUM(s.finished) totalFinished,
+        s.id s_id
+        FROM
+        student AS s
+        LEFT JOIN employee AS e ON s.marketuser = e.id
+        <include refid="condition"/>
+        GROUP BY ${groupType}
+        ORDER BY s.id
+    </select>
+
+
+</mapper>

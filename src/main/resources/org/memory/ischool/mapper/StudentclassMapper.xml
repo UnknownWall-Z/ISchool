@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.StudentclassMapper" >
+  <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Studentclass" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="classname" property="classname" jdbcType="VARCHAR" />
+    <result column="tatolstudent" property="tatolstudent" jdbcType="BIGINT" />
+    <result column="seating" property="seating" jdbcType="BIGINT" />
+    <result column="classlocation" property="classlocation" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="TINYINT" />
+    <result column="affilliation" property="affilliation" jdbcType="VARCHAR" />
+
+    <association property="headteacher" javaType="org.memory.ischool.domain.Employee" columnPrefix="e_">
+      <result property="id" column="id"></result>
+      <result property="realname" column="realname"></result>
+    </association>
+
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from studentclass
+    where id = #{id,jdbcType=BIGINT}
+
+  </delete>
+  <insert id="insert" parameterType="org.memory.ischool.domain.Studentclass" useGeneratedKeys="true" keyProperty="id" >
+    insert into studentclass (classname, headteacher_id, tatolstudent, 
+      seating, classlocation, affilliation, 
+      state)
+    values (#{classname,jdbcType=VARCHAR}, #{headteacher.id,jdbcType=VARCHAR}, #{tatolstudent,jdbcType=BIGINT}, 
+      #{seating,jdbcType=BIGINT}, #{classlocation,jdbcType=VARCHAR}, #{affilliation,jdbcType=VARCHAR}, 
+      #{state,jdbcType=TINYINT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.Studentclass" >
+    update studentclass st
+    set
+      classname = #{classname,jdbcType=VARCHAR},
+      headteacher_id = #{headteacher.id,jdbcType=VARCHAR},
+      tatolstudent = #{tatolstudent,jdbcType=BIGINT},
+      seating = #{seating,jdbcType=BIGINT},
+      classlocation = #{classlocation,jdbcType=VARCHAR},
+      affilliation = #{affilliation,jdbcType=VARCHAR},
+      state = #{state,jdbcType=TINYINT}
+    where st.id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, classname, headteacher_id, tatolstudent, seating, classlocation, affilliation, 
+    state
+    from studentclass
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select st.id , st.classname , st.tatolstudent , st.seating ,
+    st.classlocation ,st.affilliation ,st.state ,  e.id e_id , e.realname e_realname
+    from studentclass  st
+    join  employee e on st.headteacher_id=e.id
+  </select>
+
+  <sql id="where_sql">
+    <where>
+      <if test="keyword != null and keyword != ''">
+        (
+          e.realname like concat("%",#{keyword},"%")
+          or st.classname  like concat("%",#{keyword},"%")
+        )
+      </if>
+      <if test="state != null">
+        and st.state = 0
+      </if>
+    </where>
+  </sql>
+
+  <select id="getTotalCount" resultType="long">
+    select count(st.id)
+    from studentclass st
+    join  employee e on st.headteacher_id=e.id
+    <include refid="where_sql"/>
+  </select>
+
+
+
+  <select id="getListData" resultMap="BaseResultMap">
+    select st.*, e.id  e_id , e.realname e_realname
+    from studentclass st
+    join  employee e on st.headteacher_id=e.id
+    <include refid="where_sql"/>
+    limit #{start},#{rows}
+  </select>
+
+  <!--获取单个员工-->
+  <select id="getEmployeeById" resultType="Long">
+    select e.id
+    from employee e
+    where e.id=#{id}
+  </select>
+
+  <update id="changState" parameterType="long">
+    update studentclass  st set state = 0 where st.id = #{id}
+  </update>
+</mapper>

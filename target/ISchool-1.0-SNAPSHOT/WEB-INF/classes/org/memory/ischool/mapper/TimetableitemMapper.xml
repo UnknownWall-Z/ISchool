@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.TimetableitemMapper" >
+  <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Timetableitem"  >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="timetableitmename" property="timetableitmename" jdbcType="VARCHAR" />
+    <result column="schooltime" property="schooltime" jdbcType="VARCHAR" />
+    <result column="coursetitle" property="coursetitle" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+
+    <association property="employee" javaType="org.memory.ischool.domain.Employee" columnPrefix="emp_">
+        <result column="realname" property="realname" jdbcType="BIGINT" />
+        <result column="id" property="id" jdbcType="BIGINT" />
+    </association>
+    <association property="roomclass" javaType="org.memory.ischool.domain.Roomclass" columnPrefix="rc_">
+      <result column="classroom" property="classroom" jdbcType="BIGINT" />
+      <result column="id" property="id" jdbcType="BIGINT" />
+    </association>
+    <association property="studentclass" javaType="org.memory.ischool.domain.Studentclass" columnPrefix="st_">
+      <result column="classname" property="classname" jdbcType="BIGINT" />
+      <result column="id" property="id" jdbcType="BIGINT" />
+    </association>
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from timetableitem
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert" parameterType="org.memory.ischool.domain.Timetableitem" useGeneratedKeys="true" keyProperty="id" >
+    insert into timetableitem (timetableitmename, schooltime, coursetitle , employee_id, roomclass_id,
+      studentclass_id, remark)
+    values (
+            #{timetableitmename,jdbcType=VARCHAR},
+            #{schooltime,jdbcType=VARCHAR},
+            #{coursetitle,jdbcType=BIGINT},
+            #{employee.id,jdbcType=BIGINT},
+            #{roomclass.id,jdbcType=BIGINT},
+            #{studentclass.id,jdbcType=BIGINT},
+            #{remark,jdbcType=VARCHAR})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.Timetableitem" >
+    update timetableitem
+    set
+        timetableitmename = #{timetableitmename,jdbcType=VARCHAR},
+        schooltime = #{schooltime,jdbcType=VARCHAR},
+        coursetitle=#{coursetitle,jdbcType=BIGINT},
+        employee_id = #{employee.id,jdbcType=BIGINT},
+        roomclass_id = #{roomclass.id,jdbcType=BIGINT},
+        studentclass_id = #{studentclass.id,jdbcType=BIGINT},
+        remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    SELECT
+	tti.timetableitmename ,
+	tti.schooltime ,
+	tti.coursetitle ,
+	tti.remark ,
+	emp.realname emp_realname,
+	rc.classroom rc_classroom,
+	st.classname st_classname
+    FROM
+        timetableitem tti
+    JOIN employee emp ON tti.employee_id = emp.id
+    JOIN roomclass rc ON tti.roomclass_id = rc.id
+    JOIN studentclass st ON tti.studentclass_id = st.id
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    SELECT
+    tti.id,
+	tti.timetableitmename ,
+	tti.schooltime ,
+	tti.coursetitle ,
+	tti.remark ,
+	emp.id emp_id,  emp.realname emp_realname,
+	rc.id rc_id , rc.classroom rc_classroom,
+	st.id st_id , st.classname st_classname
+    FROM
+        timetableitem tti
+    JOIN employee emp ON tti.employee_id = emp.id
+    JOIN roomclass rc ON tti.roomclass_id = rc.id
+    JOIN studentclass st ON tti.studentclass_id = st.id
+  </select>
+
+
+  <!--condition-->
+  <sql id="where_sql">
+    <where>
+      <if test="keyworditem!=null and  keyworditem !=''">
+        (
+            tti.coursetitle like concat("%",#{keyworditem},"%")
+             or emp.realname like concat("%",#{keyworditem},"%")
+        )
+      </if>
+        <if test="id!=null">
+           and tti.studentclass_id = #{id}
+        </if>
+      <if test="begindateitem!=null">
+        and   schooltime &gt; #{begindateitem}
+      </if>
+      <if test="enddateitem!=null">
+        and schooltime  &lt; #{enddateitem}
+      </if>
+    </where>
+  </sql>
+
+
+  <!--获取总条数-->
+  <select id="getTotalCount" resultType="long">
+    select count(tti.id)
+    FROM
+    timetableitem tti
+    JOIN employee emp ON tti.employee_id = emp.id
+    JOIN roomclass rc ON tti.roomclass_id = rc.id
+    JOIN studentclass st ON tti.studentclass_id = st.id
+    <include refid="where_sql"></include>
+  </select>
+
+  <!--获取结果集-->
+  <select id="getListData" resultMap="BaseResultMap">
+     SELECT
+    tti.id ,
+	tti.timetableitmename ,
+	tti.schooltime ,
+	tti.coursetitle ,
+	tti.remark ,
+	emp.id emp_id, emp.realname emp_realname,
+	rc.id rc_id ,rc.classroom rc_classroom,
+	st.id st_id ,st.classname st_classname
+    FROM
+        timetableitem tti
+    JOIN employee emp ON tti.employee_id = emp.id
+    JOIN roomclass rc ON tti.roomclass_id = rc.id
+    JOIN studentclass st ON tti.studentclass_id = st.id
+    <include refid="where_sql"></include>
+    limit #{start},#{rows}
+  </select>
+
+    <select id="getTimetableitemById"  resultMap="BaseResultMap" >
+        SELECT
+        tti.id ,
+        tti.timetableitmename ,
+        tti.schooltime ,
+        tti.coursetitle ,
+        tti.remark ,
+        emp.id emp_id, emp.realname emp_realname,
+        rc.id rc_id ,rc.classroom rc_classroom,
+        st.id st_id ,st.classname st_classname
+        FROM
+            timetableitem tti
+        JOIN employee emp ON tti.employee_id = emp.id
+        JOIN roomclass rc ON tti.roomclass_id = rc.id
+        JOIN studentclass st ON tti.studentclass_id = st.id
+        WHERE tti.studentclass_id = #{id}
+    </select>
+
+</mapper>

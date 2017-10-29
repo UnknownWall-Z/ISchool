@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.SalaryMapper" >
+  <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Salary" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="salary" property="salary" jdbcType="DECIMAL" />
+    <result column="balancedate" property="balancedate" jdbcType="DATE" />
+    <result column="year" property="year"></result>
+    <result column="month" property="month"></result>
+    <result column="indays" property="indays"></result>
+    <association property="employee" javaType="Employee" columnPrefix="e_">
+      <result column="id" property="id"/>
+      <result column="realname" property="realname"/>
+    </association>
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from salary
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert">
+    insert into salary(salary,balancedate,employee_id,year,month,indays) values(#{salary},#{balancedate},#{employee.id},#{year},#{month},#{indays})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.Salary" >
+    update salary
+    set salary = #{salary,jdbcType=DECIMAL},
+      `balancedate` = #{balancedate,jdbcType=DATE},
+      employee_id = #{employee.id,jdbcType=BIGINT},
+      year = #{year},
+      month = #{month},
+      indays = #{indays}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, salary, `balancedate`, employee_id,year,month,indays
+    from salary
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select e.id as e_id,e.realname as e_realname,s.*
+    from salary s left join employee e on (s.employee_id = e.id)
+  </select>
+
+  <sql id="where_sql">
+    <where>
+      <if test="keyword!=null and keyword!=''">
+        (
+        e.id like concat('%',#{keyword},'%')
+        or e.realname like concat('%',#{keyword},'%')
+        )
+      </if>
+      <if test="startdate != null">
+        and s.balancedate &gt;= #{startdate}
+      </if>
+      <if test="enddate != null">
+        and s.balancedate &lt;= #{enddate}
+      </if>
+      <if test="year != null">
+        and s.year = #{year}
+      </if>
+      <if test="month != null">
+        and s.month = #{month}
+      </if>
+    </where>
+  </sql>
+
+  <select id="queryPageCount" resultType="long">
+    select count(*) from salary s left join employee e on (s.employee_id = e.id)
+    <include refid="where_sql"/>
+  </select>
+
+  <select id="queryPageResult" resultMap="BaseResultMap">
+    select e.id as e_id,e.realname as e_realname,s.* from salary s left join employee e on (s.employee_id = e.id)
+    <include refid="where_sql"/>
+    limit #{start},#{rows}
+  </select>
+
+  <select id="selectbyline" resultType="org.memory.ischool.domain.Salary">
+    select * from salary
+    where employee_id = #{employeeId}
+    and year = #{year}
+    and month = #{month}
+  </select>
+
+  <select id="balance" resultType="org.memory.ischool.vo.BalanceVO">
+    select count(a.id) indays,employee_id employeeId,e.basicwage from attendance a left join employee e on a.employee_id = e.id
+    where month(currenttime) = #{month} and year(currenttime) = #{year}
+    and ondutystate = "正常打卡" and offdutystate = "正常打卡" GROUP BY employee_id
+  </select>
+
+</mapper>

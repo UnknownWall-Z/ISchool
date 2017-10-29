@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.SchoolTraceLogMapper">
+    <resultMap id="BaseResultMap" type="org.memory.ischool.domain.SchoolTraceLog">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="inputTime" property="inputTime" jdbcType="TIMESTAMP"/>
+        <result column="talkTime" property="talkTime" jdbcType="TIMESTAMP"/>
+        <result column="score" property="score" jdbcType="INTEGER"/>
+        <result column="scoreMsg" property="scoreMsg" jdbcType="VARCHAR"/>
+        <result column="talkWay" property="talkWay" jdbcType="VARCHAR"/>
+        <result column="state" property="state"/>
+
+        <association column="client_id" property="client" javaType="org.memory.ischool.domain.SchoolClient" columnPrefix="cl_">
+            <id column="id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
+
+        <association column="tracer_id" property="tracer"
+                     javaType="org.memory.ischool.domain.Employee" jdbcType="BIGINT"
+                     columnPrefix="e_">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+            <result column="tel" property="tel"/>
+            <result column="email" property="email"/>
+        </association>
+
+        <association column="manager_id" property="manager"
+                     javaType="org.memory.ischool.domain.Employee" columnPrefix="ee_">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from schooltracelog
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="org.memory.ischool.domain.SchoolTraceLog" useGeneratedKeys="true" keyProperty="id">
+    insert into schooltracelog (client_id, tracer_id, content, 
+      talkTime, inputTime, manager_id, 
+      score, scoreMsg, talkWay,state
+      )
+    values (#{client.id,jdbcType=BIGINT}, #{tracer.id,jdbcType=BIGINT}, #{content,jdbcType=VARCHAR}, 
+      #{talkTime,jdbcType=TIMESTAMP}, #{inputTime,jdbcType=TIMESTAMP}, #{manager.id,jdbcType=BIGINT}, 
+      #{score,jdbcType=INTEGER}, #{scoreMsg,jdbcType=VARCHAR}, #{talkWay,jdbcType=VARCHAR},#{state}
+      )
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.SchoolTraceLog">
+    update schooltracelog
+    set client_id = #{client.id,jdbcType=BIGINT},
+      tracer_id = #{tracer.id,jdbcType=BIGINT},
+      content = #{content,jdbcType=VARCHAR},
+      talkTime = #{talkTime,jdbcType=TIMESTAMP},
+      inputTime = #{inputTime,jdbcType=TIMESTAMP},
+      manager_id = #{manager.id,jdbcType=BIGINT},
+      score = #{score,jdbcType=INTEGER},
+      scoreMsg = #{scoreMsg,jdbcType=VARCHAR},
+      talkWay = #{talkWay,jdbcType=VARCHAR},
+      state=#{state}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <sql id="base_column">
+      sc.id,
+      sc.content,
+      sc.talkTime,
+      sc.inputTime,
+      sc.score,
+      sc.scoreMsg,
+      sc.talkWay,
+      sc.tracer_id,
+      sc.manager_id,
+      sc.state,
+
+      e.id AS e_id,
+      e.username AS e_username,
+      e.email AS e_email,
+      e.tel As e_tel,
+
+      ee.id ee_id,
+      ee.username AS ee_username,
+
+      cl.id AS cl_id,
+      cl.`name` cl_name
+  </sql>
+
+    <sql id="base_table">
+    schooltracelog AS sc
+    LEFT JOIN employee AS e ON sc.tracer_id = e.id
+    LEFT JOIN employee AS ee ON sc.manager_id = ee.id
+    LEFT JOIN schoolclient AS cl ON sc.client_id = cl.id
+  </sql>
+    <sql id="base_where">
+
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="base_column"/>
+        from
+        <include refid="base_table"/>
+        where sc.id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="base_column"/>
+        from
+        <include refid="base_table"/>
+    </select>
+
+    <select id="getListData" resultMap="BaseResultMap" parameterType="org.memory.ischool.query.SchoolTraceLogQueryObject">
+        select
+        <include refid="base_column"/>
+        from
+        <include refid="base_table"/>
+
+        limit #{start},#{rows}
+    </select>
+
+    <select id="getTotalCount" resultType="long">
+        select count(*)
+        from
+        <include refid="base_table"/>
+
+    </select>
+
+    <!--这里缺少manager_id-->
+    <update id="audit" parameterType="org.memory.ischool.domain.SchoolTraceLog">
+    update schooltracelog
+    set
+      score = #{score,jdbcType=INTEGER},
+      scoreMsg = #{scoreMsg,jdbcType=VARCHAR},
+      state=#{state}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

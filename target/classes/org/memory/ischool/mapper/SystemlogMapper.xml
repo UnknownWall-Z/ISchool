@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.SystemlogMapper" >
+  <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Systemlog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="opTime" property="optime" jdbcType="TIMESTAMP" />
+    <result column="opIp" property="opip" jdbcType="VARCHAR" />
+    <result column="function" property="function" jdbcType="VARCHAR" />
+    <result column="params" property="params" jdbcType="VARCHAR" />
+
+      <association property="opuser" javaType="org.memory.ischool.domain.Employee" columnPrefix="emp_">
+            <result column="realname" property="realname" jdbcType="BIGINT" />
+            <result column="id" property="id" jdbcType="BIGINT" />
+      </association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from systemlog
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="org.memory.ischool.domain.Systemlog" useGeneratedKeys="true" keyProperty="id" >
+    insert into systemlog (opUser_id, opTime, opIp, 
+      function, params)
+    values (#{opuser.id,jdbcType=BIGINT}, #{optime,jdbcType=TIMESTAMP}, #{opip,jdbcType=VARCHAR}, 
+      #{function,jdbcType=VARCHAR}, #{params,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.Systemlog" >
+    update systemlog
+    set opUser_id = #{opuser.id,jdbcType=BIGINT},
+      opTime = #{optime,jdbcType=TIMESTAMP},
+      opIp = #{opip,jdbcType=VARCHAR},
+      function = #{function,jdbcType=VARCHAR},
+      params = #{params,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, opUser_id, opTime, opIp, function, params
+    from systemlog
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, opUser_id, opTime, opIp, function, params
+    from systemlog
+  </select>
+  <sql id="sql_where">
+      <where>
+          <if test="keyword!=null and  keyword!=''">
+              and  emp.realname like  concat("%",#{keyword},"%")
+              or   sl.opip  like  concat("%",#{keyword},"%")
+          </if>
+          <if test="begindate!=null">
+              and optime &gt; #{begindate}
+          </if>
+          <if test="enddate!=null">
+                and optime &lt; #{enddate}
+          </if>
+      </where>
+  </sql>
+
+  <select id="getTotalCount" resultType="long">
+    SELECT  count(sl.id)
+      from  systemlog sl
+      join employee emp  on  sl.opUser_id=emp.id
+      <include refid="sql_where"></include>
+  </select>
+
+
+  <select id="getListData" resultMap="BaseResultMap">
+    select  sl.* ,
+    emp.id  emp_id, emp.realname emp_realname
+    from  systemlog sl
+    join employee emp  on  sl.opUser_id=emp.id
+     <include refid="sql_where"></include>
+    limit #{start},#{rows}
+  </select>
+</mapper>

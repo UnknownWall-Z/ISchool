@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.AttendanceMapper" >
+  <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Attendance" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="currenttime" property="currenttime" />
+    <result column="signintime" property="signintime" />
+    <result column="signouttime" property="signouttime" />
+    <result column="ondutystate" property="ondutystate" jdbcType="VARCHAR" />
+    <result column="offdutystate" property="offdutystate" jdbcType="VARCHAR" />
+    <result column="addsigntime" property="addsigntime" />
+
+    <association property="employee" column="employee_id" javaType="org.memory.ischool.domain.Employee" columnPrefix="e_">
+      <id column="id" property="id"></id>
+      <result column="username" property="username"></result>
+    </association>
+
+  </resultMap>
+
+  <insert id="insert" parameterType="org.memory.ischool.domain.Attendance" useGeneratedKeys="true" keyProperty="id" >
+    insert into Attendance (currenttime, employee_id,signintime,signouttime,ondutystate,offdutystate,addsigntime )
+    values (#{currenttime,jdbcType=VARCHAR}, #{employee.id,jdbcType=BIGINT}, #{signintime},#{signouttime},
+      #{ondutystate,jdbcType=VARCHAR}, #{offdutystate,jdbcType=VARCHAR}, #{addsigntime,jdbcType=VARCHAR})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.Attendance" >
+    update attendance
+      set
+      <if test="signouttime==null and offdutystate==null">
+      signouttime=#{signouttime},
+      offdutystate=#{offdutystate,jdbcType=VARCHAR},
+      addsigntime=#{addsigntime}
+    </if>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+   select a.id,a.currenttime,a.employee_id,a.signintime,a.signouttime,
+    a.ondutystate,a.offdutystate ,a.addsigntime,e.id e_id,e.username e_username
+   from attendance a join employee e on a.employee_id=e.id
+    where a.id = #{attendance.id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+   select a.id,a.currenttime,a.employee_id,a.signintime,a.signouttime,
+    a.ondutystate,a.offdutystate ,a.addsigntime,e.id e_id,e.username e_username
+    from attendance a join employee e on a.employee_id=e.id
+  </select>
+
+  <select id="getListData" resultMap="BaseResultMap">
+    select a.id,a.currenttime,a.employee_id,a.signintime,a.signouttime,
+    a.ondutystate,a.offdutystate ,a.addsigntime,e.id e_id,e.username e_username
+   from attendance a join employee e on a.employee_id=e.id
+    limit #{start},#{rows}
+  </select>
+
+  <select id="getTotalCount" resultType="long">
+    select count(id) from attendance
+  </select>
+  <select id="getTimeAll" resultType="java.util.Date">
+    SELECT currenttime FROM attendance WHERE employee_id=#{id}
+  </select>
+
+  <select id="getEndTime" resultType="java.util.Date">
+    SELECT currenttime FROM attendance WHERE id=#{id} ORDER BY currenttime DESC LIMIT 1
+  </select>
+</mapper>

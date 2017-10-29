@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.SchoolLinkManMapper">
+    <resultMap id="BaseResultMap" type="org.memory.ischool.domain.SchoolLinkMan">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="age" property="age" jdbcType="INTEGER"/>
+        <result column="gender" property="gender" jdbcType="BIT"/>
+        <result column="qq" property="qq" jdbcType="VARCHAR"/>
+        <result column="WeChat" property="wechat" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="firstLinkman" property="firstlinkman" jdbcType="BIT"/>
+        <result column="position" property="position" jdbcType="VARCHAR"/>
+        <result column="department" property="department" jdbcType="VARCHAR"/>
+        <result column="birthday" property="birthday" jdbcType="DATE"/>
+        <result column="introduction" property="introduction" jdbcType="VARCHAR"/>
+        <association property="school" javaType="org.memory.ischool.domain.SchoolClient">
+            <result column="sc_id" property="id"></result>
+            <result column="sc_name" property="name"></result>
+        </association>
+    </resultMap>
+    <resultMap id="simpleMap" type="org.memory.ischool.domain.SchoolLinkMan">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="age" property="age" jdbcType="INTEGER"/>
+        <result column="gender" property="gender" jdbcType="BIT"/>
+        <result column="qq" property="qq" jdbcType="VARCHAR"/>
+        <result column="WeChat" property="wechat" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="firstLinkman" property="firstlinkman" jdbcType="BIT"/>
+        <result column="position" property="position" jdbcType="VARCHAR"/>
+        <result column="department" property="department" jdbcType="VARCHAR"/>
+        <result column="birthday" property="birthday" jdbcType="DATE"/>
+        <result column="introduction" property="introduction" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getBySchoolId" resultMap="simpleMap">
+    SELECT  id,name, age,
+      gender, qq, WeChat, email,
+      firstLinkman, position, department,
+      birthday, introduction
+     FROM schoolLinkMan
+     WHERE school_id=#{id}
+  </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from schoollinkman
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="org.memory.ischool.domain.SchoolLinkMan" useGeneratedKeys="true" keyProperty="id">
+    insert into schoollinkman (school_id, name, age, 
+      gender, qq, WeChat, email, 
+      firstLinkman, position, department, 
+      birthday, introduction)
+    values (#{school.id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER},
+      #{gender,jdbcType=BIT}, #{qq,jdbcType=VARCHAR}, #{wechat,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{firstlinkman,jdbcType=BIT}, #{position,jdbcType=VARCHAR}, #{department,jdbcType=VARCHAR}, 
+      #{birthday,jdbcType=DATE}, #{introduction,jdbcType=VARCHAR})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.SchoolLinkMan">
+    update schoollinkman
+    set school_id = #{school.id,jdbcType=BIGINT},
+      name = #{name,jdbcType=VARCHAR},
+      age = #{age,jdbcType=INTEGER},
+      gender = #{gender,jdbcType=BIT},
+      qq = #{qq,jdbcType=VARCHAR},
+      WeChat = #{wechat,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      firstLinkman = #{firstlinkman,jdbcType=BIT},
+      position = #{position,jdbcType=VARCHAR},
+      department = #{department,jdbcType=VARCHAR},
+      birthday = #{birthday,jdbcType=DATE},
+      introduction = #{introduction,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select schoollinkman.id, schoollinkman.name, age, gender, qq, WeChat, schoollinkman.email, firstLinkman, position,
+    department, birthday, schoollinkman.introduction,sc.id sc_id,sc.name sc_name
+    from schoollinkman
+    LEFT JOIN schoolClient sc ON schoollinkman.school_id=sc.id
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select schoollinkman.id,  schoollinkman.name, age, gender, qq, WeChat, schoollinkman.email, firstLinkman, position,
+    department, birthday, schoollinkman.introduction
+    ,sc.id sc_id,sc.name sc_name
+    from schoollinkman
+    LEFT JOIN schoolClient sc ON schoollinkman.school_id=sc.id
+  </select>
+    <select id="getByName" resultMap="BaseResultMap">
+    select schoollinkman.id,  schoollinkman.name, age, gender, qq, WeChat, schoollinkman.email, firstLinkman, position,
+    department, birthday, schoollinkman.introduction
+    ,sc.id sc_id,sc.name sc_name
+    from schoollinkman
+    LEFT JOIN schoolClient sc ON schoollinkman.school_id=sc.id
+    where schoollinkman.name=concat("",#{name})
+  </select>
+</mapper>

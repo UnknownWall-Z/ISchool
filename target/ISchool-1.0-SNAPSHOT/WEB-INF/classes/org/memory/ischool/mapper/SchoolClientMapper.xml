@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.SchoolClientMapper">
+    <resultMap id="BaseResultMap" type="org.memory.ischool.domain.SchoolClient">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="location" property="location" jdbcType="VARCHAR"/>
+        <result column="importance" property="importance" jdbcType="VARCHAR"/>
+        <result column="wantedLevel" property="wantedLevel" jdbcType="VARCHAR"/>
+        <result column="studentNum" property="studentNum" jdbcType="INTEGER"/>
+        <result column="cooperationNum" property="cooperationNum" jdbcType="TINYINT"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="education" property="education" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="itstudentNum" property="itstudentNum" jdbcType="INTEGER"/>
+        <result column="buildingTime" property="buildingTime" jdbcType="TIMESTAMP"/>
+        <result column="schooleTel" property="schooleTel" jdbcType="VARCHAR"/>
+        <result column="telegraph" property="telegraph" jdbcType="VARCHAR"/>
+        <result column="postcode" property="postcode" jdbcType="VARCHAR"/>
+        <result column="teacherNum" property="teacherNum" jdbcType="TINYINT"/>
+        <result column="allStudent" property="allStudent" jdbcType="SMALLINT"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="introduction" property="introduction" jdbcType="VARCHAR"/>
+        <result column="wantedSubject" property="wantedSubject" jdbcType="VARCHAR"/>
+        <result column="wantedSchool" property="wantedSchool" jdbcType="VARCHAR"/>
+        <result column="lastTraceTime" property="lastTraceTime" jdbcType="TIMESTAMP"/>
+        <result column="nextTraceTime" property="nextTraceTime" jdbcType="TIMESTAMP"/>
+        <result column="clientState" property="clientState" jdbcType="VARCHAR"/>
+        <result column="state" property="state" jdbcType="VARCHAR"/>
+
+
+        <association column="recruitre_id" property="recruitre" javaType="org.memory.ischool.domain.Employee"
+                     columnPrefix="re_">
+            <result column="id" property="id"></result>
+            <result column="name" property="username"></result>
+        </association>
+        <association column="tracer_id" property="tracer" javaType="org.memory.ischool.domain.Employee" columnPrefix="tr_">
+            <result column="id" property="id"></result>
+            <result column="name" property="username"/>
+            <result column="tel" property="tel"/>
+            <result column="email" property="email"/>
+        </association>
+
+        <collection property="linkmen" column="id" ofType="org.memory.ischool.domain.SchoolLinkMan"
+                    select="org.memory.ischool.mapper.SchoolLinkManMapper.getBySchoolId">
+        </collection>
+
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from SchoolClient
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+    <insert id="insert" parameterType="org.memory.ischool.domain.SchoolClient" useGeneratedKeys="true" keyProperty="id">
+    insert into SchoolClient (name, location, importance, 
+      wantedLevel, studentNum, cooperationNum, 
+      type, education, email, 
+      itstudentNum, buildingTime, schooleTel, 
+      telegraph, postcode, teacherNum, 
+      allStudent, remark, introduction, 
+      wantedSubject, wantedSchool, recruitre_id, 
+      tracer_id, lastTraceTime, nextTraceTime, 
+      clientState,state)
+    values (#{name,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR}, #{importance,jdbcType=VARCHAR}, 
+      #{wantedLevel,jdbcType=VARCHAR}, #{studentNum,jdbcType=INTEGER}, #{cooperationNum,jdbcType=TINYINT}, 
+      #{type,jdbcType=VARCHAR}, #{education,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{itstudentNum,jdbcType=INTEGER}, #{buildingTime,jdbcType=TIMESTAMP}, #{schooleTel,jdbcType=VARCHAR}, 
+      #{telegraph,jdbcType=VARCHAR}, #{postcode,jdbcType=VARCHAR}, #{teacherNum,jdbcType=TINYINT}, 
+      #{allStudent,jdbcType=SMALLINT}, #{remark,jdbcType=VARCHAR}, #{introduction,jdbcType=VARCHAR}, 
+      #{wantedSubject,jdbcType=VARCHAR}, #{wantedSchool,jdbcType=VARCHAR}, #{recruitre.id,jdbcType=BIGINT}, 
+      #{tracer.id,jdbcType=BIGINT}, #{lastTraceTime,jdbcType=TIMESTAMP}, #{nextTraceTime,jdbcType=TIMESTAMP}, 
+      #{clientState},#{state})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.SchoolClient">
+    update SchoolClient
+    set name = #{name,jdbcType=VARCHAR},
+      location = #{location,jdbcType=VARCHAR},
+      importance = #{importance,jdbcType=VARCHAR},
+      wantedLevel = #{wantedLevel,jdbcType=VARCHAR},
+      studentNum = #{studentNum,jdbcType=INTEGER},
+      cooperationNum = #{cooperationNum,jdbcType=TINYINT},
+      type = #{type,jdbcType=VARCHAR},
+      education = #{education,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      itstudentNum = #{itstudentNum,jdbcType=INTEGER},
+
+      schooleTel = #{schooleTel,jdbcType=VARCHAR},
+      telegraph = #{telegraph,jdbcType=VARCHAR},
+      postcode = #{postcode,jdbcType=VARCHAR},
+      teacherNum = #{teacherNum,jdbcType=TINYINT},
+      allStudent = #{allStudent,jdbcType=SMALLINT},
+      remark = #{remark,jdbcType=VARCHAR},
+      introduction = #{introduction,jdbcType=VARCHAR},
+      wantedSubject = #{wantedSubject,jdbcType=VARCHAR},
+      wantedSchool = #{wantedSchool,jdbcType=VARCHAR},
+      tracer_id = #{tracer.id,jdbcType=BIGINT},
+      lastTraceTime = #{lastTraceTime,jdbcType=TIMESTAMP},
+      nextTraceTime = #{nextTraceTime,jdbcType=TIMESTAMP},
+      state = #{state}
+
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <sql id="base_column">
+    SchoolClient.id, SchoolClient.name, location, importance, wantedLevel, studentNum, cooperationNum, type,
+    education, SchoolClient.email, itstudentNum, buildingTime, schooleTel, telegraph, postcode, teacherNum,
+    allStudent, remark, SchoolClient.introduction, wantedSubject, wantedSchool, recruitre_id, tracer_id,
+    lastTraceTime, nextTraceTime, clientState,SchoolClient.state,
+    e.id re_id,e.username re_name,
+    ee.id tr_id,ee.username tr_name,ee.tel tr_tel,ee.email tr_email
+    </sql>
+
+    <sql id="base_table">
+        SchoolClient
+        LEFT JOIN employee e ON e.id =recruitre_id
+        LEFT JOIN employee ee ON ee.id = tracer_id
+    </sql>
+
+    <sql id="base_where">
+        <where>
+            <if test="schoolName != null and schoolName != ''">
+                and (
+                name like concat("%",#{schoolName},"%")
+                )
+            </if>
+            <if test="type != null and type != ''">
+                and (
+                type = #{type}
+                )
+            </if>
+            <if test="recruiterId != null and recruiterId != ''">
+                and (
+                recruitre_id =#{recruiterId}
+                )
+            </if>
+
+            <if test="state != null and state != ''">
+                and
+                SchoolClient.state = #{state}
+            </if>
+
+            <if test="userId==0">
+                and (tracer_id is NULL )
+            </if>
+            <if test="userId != null and userId!=0">
+                and tracer_id=#{userId}
+            </if>
+            <if test="nearTime != null">
+                and
+                SchoolClient.nextTraceTime &lt;= #{nearTime}
+            </if>
+            <if test="eagerness != null and eagerness != ''">
+                and
+                SchoolClient.wantedLevel = #{eagerness}
+            </if>
+            <if test="importance != null and importance != ''">
+                and
+                SchoolClient.importance = #{importance}
+            </if>
+            <if test="clientState != null">
+                and
+                SchoolClient.clientState = #{clientState}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="base_column"/>
+        from
+        <include refid="base_table"/>
+        where schoolClient.id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="base_column"/>
+        from
+        <include refid="base_table"/>
+    </select>
+    <select id="getListData" resultMap="BaseResultMap">
+        select
+        <include refid="base_column"/>
+        from
+        <include refid="base_table"/>
+        <include refid="base_where"/>
+        limit #{start},#{rows}
+    </select>
+    <select id="getTotalCount" resultType="long">
+        select count(*)
+        from
+        <include refid="base_table"/>
+        <include refid="base_where"/>
+    </select>
+    <update id="traced">
+        update schoolClient
+        SET
+        clientState = true,
+        lastTraceTime=#{date}
+        WHERE id=#{id}
+    </update>
+    <update id="pushToPool">
+        update schoolClient
+        SET
+        state='共享'
+        WHERE id=#{id}
+    </update>
+    <update id="takeFromPool">
+        update schoolClient
+        SET
+        tracer_id=#{userId},
+        state='待审核'
+        WHERE id=#{clientId}
+    </update>
+    <update id="distributeUpdate">
+        update schoolClient
+        SET
+        tracer_id=#{tracer.id},
+        state=#{state}
+        WHERE id=#{id}
+    </update>
+    <update id="audit">
+        update schoolClient
+        SET
+        state="正常"
+        WHERE id=#{id}
+    </update>
+    <update id="auditFaile">
+        update schoolClient
+        SET
+        state="正常"
+        WHERE id=#{id}
+    </update>
+</mapper>

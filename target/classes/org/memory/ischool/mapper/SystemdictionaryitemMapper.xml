@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.SystemdictionaryitemMapper">
+    <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Systemdictionaryitem">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="intro" property="intro" jdbcType="VARCHAR"/>
+        <association property="systemdictionary" javaType="org.memory.ischool.domain.Systemdictionary">
+            <id column="sid" property="id"/>
+            <result column="ssn" property="sn"/>
+            <result column="sname" property="name"/>
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from systemdictionaryitem
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="org.memory.ischool.domain.Systemdictionaryitem" useGeneratedKeys="true"
+            keyProperty="id">
+    insert into systemdictionaryitem (parent_sn, name, intro)
+    values (#{systemdictionary.name,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{intro,jdbcType=VARCHAR})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.Systemdictionaryitem">
+    update systemdictionaryitem
+    set parent_sn = #{systemdictionary.name,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      intro = #{intro,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select id, parent_sn, name, intro
+    from systemdictionaryitem
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, parent_sn, name, intro
+    from systemdictionaryitem
+  </select>
+    <select id="queryBysystemdictionId" resultMap="BaseResultMap">
+        select item.id,item.parent_sn,item.name,item.intro,s.name sname,s.id sid
+        from systemdictionaryitem item left join systemdictionary s ON item.parent_sn=s.name
+        WHERE s.id=#{sid}
+    </select>
+    <select id="getTotalCount" resultType="long">
+        select count(*) from systemdictionaryitem
+    </select>
+
+    <select id="getListData" resultMap="BaseResultMap">
+        select * from systemdictionaryitem
+        limit #{start},#{rows}
+    </select>
+</mapper>

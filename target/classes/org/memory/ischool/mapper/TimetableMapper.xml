@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.TimetableMapper">
+    <!--<resultMap id="BaseResultMap" tyTimetableable">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+
+
+        <association property="employee" javaTyEmployeeoyee" columnPrefix="emp_">
+            <result column="realname" property="realname" jdbcType="BIGINT"/>
+            <result column="id" property="id" jdbcType="BIGINT"/>
+        </association>
+
+        <association property="studentclass" javaTyStudentclasslass" columnPrefix="sc_">
+            <result column="id" property="id" jdbcType="BIGINT"/>
+            <result column="classname" property="classname" jdbcType="BIGINT"/>
+        </association>
+
+
+        <collection property="timetableitem" ofTyTimetableitemitem"
+                    seleTimetableitemMapperpper.getTimetableitemById" column="id">
+        </collection>
+
+
+    </resultMap>-->
+   <!-- <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from timetable
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterTyTimetableable" useGeneratedKeys="true" keyProperty="id">
+    insert into
+      timetable (studentclass_id, employee_id, timetableitem_id)
+         values
+         (#{studentclass.id,jdbcType=BIGINT}, #{employee.id,jdbcType=BIGINT}, #{timetableitem.id,jdbcType=BIGINT}
+          )
+  </insert>
+    <update id="updateByPrimaryKey" parameterTyTimetableable">
+    update timetable
+    set studentclass_id = #{studentclass.id,jdbcType=BIGINT},
+      employee_id = #{employee.id,jdbcType=BIGINT},
+      timetableitem_id = #{timetableitem.id,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+-->
+   <!-- <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select  tt.id  ,
+          sc.classname sc_classname ,
+          emp.realname  emp_realname ,
+          tti.id  tti_id ,tti.timetableitmename  tti_timetableitmename
+        from timetable tt
+        JOIN studentclass sc on  tt.studentclass_id =  sc.id
+        join  employee emp  on tt.employee_id=emp.id
+        join timetableitem tti  on tt.timetableitem_id=tti.id
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        tt.id  ,
+         sc.id sc_id,  sc.classname sc_classname ,
+         emp.id emp_id ,emp.realname  emp_realname ,
+         tti.id  tti_id ,tti.timetableitmename  tti_timetableitmename
+        from timetable tt
+        JOIN studentclass sc on  tt.studentclass_id =  sc.id
+        join  employee emp  on tt.employee_id=emp.id
+        join timetableitem tti  on tt.timetableitem_id=tti.id
+      </select>
+
+
+
+    &lt;!&ndash;condition&ndash;&gt;
+    <sql id="where_sql">
+        <where>
+            <if test="keyword!=null and  keyword !=''">
+                (
+                  sc.classname like concat("%",#{keyword},"%")
+                or emp.realname like concat("%",#{keyword},"%")
+                )
+            </if>
+            <if test="bigindate!=null">
+                and   schooltime &lt; #{bigindate}
+            </if>
+            <if test="enddate!=null">
+                and schooltime  &gt; #{enddate}
+            </if>
+        </where>
+    </sql>
+
+
+    &lt;!&ndash;获取总条数&ndash;&gt;
+    <select id="getTotalCount" resultType="long">
+        select count(tt.id)
+        from timetable tt
+        JOIN studentclass sc on  tt.studentclass_id =  sc.id
+        join  employee emp  on tt.employee_id=emp.id
+        join timetableitem tti  on tt.timetableitem_id=tti.id
+        <include refid="where_sql"></include>
+    </select>
+
+    &lt;!&ndash;获取结果集&ndash;&gt;
+    <select id="getListData" resultMap="BaseResultMap">
+        select  tt.id  ,
+          sc.id sc_id, sc.classname sc_classname ,
+          emp.id  emp_id  ,emp.realname  emp_realname ,
+        tti.id  tti_id , tti.timetableitmename  tti_timetableitmename
+        from timetable tt
+        JOIN studentclass sc on  tt.studentclass_id =sc.id
+        join  employee emp  on tt.employee_id=emp.id
+        join timetableitem tti  on tt.timetableitem_id=tti.id
+        <include refid="where_sql"></include>
+        limit #{start},#{rows}
+    </select>
+-->
+
+</mapper>

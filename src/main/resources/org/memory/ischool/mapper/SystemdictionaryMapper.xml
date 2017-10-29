@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.SystemdictionaryMapper" >
+  <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Systemdictionary" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="sn" property="sn" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="intro" property="intro" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, sn, name, intro
+    from systemdictionary
+  </select>
+  <select id="querySsnByItemParentSn" resultType="org.memory.ischool.domain.Systemdictionaryitem">
+    select item.* from systemdictionaryitem item
+    LEFT JOIN systemdictionary s
+    ON item.parent_sn=s.name
+    where s.sn=#{ssn}
+  </select>
+  <select id="getTotalCount" resultType="long">
+    select count(*) from systemdictionary c
+  </select>
+
+  <select id="getListData" resultMap="BaseResultMap">
+    select * from systemdictionary c
+    limit #{start},#{rows}
+  </select>
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.ClienttrackMapper">
+    <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Clienttrack">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="inputTime" property="inputtime" jdbcType="DATE"/>
+        <result column="purpose" property="purpose" jdbcType="VARCHAR"/>
+        <result column="consultWay" property="consultway" jdbcType="VARCHAR"/>
+        <result column="summary" property="summary" jdbcType="VARCHAR"/>
+        <result column="nextTime" property="nexttime" jdbcType="DATE"/>
+        <association property="client" column="client_id" select="org.memory.ischool.mapper.ClientMapper.selectByPrimaryKey">
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from clienttrack
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="org.memory.ischool.domain.Clienttrack" useGeneratedKeys="true" keyProperty="id">
+    insert into clienttrack (inputTime, client_id,purpose,consultWay, summary,nextTime)
+    values (#{inputtime,jdbcType=DATE}, #{client.id,jdbcType=BIGINT},#{purpose,jdbcType=VARCHAR},#{consultway,jdbcType=VARCHAR}, #{summary,jdbcType=VARCHAR}, #{nexttime,jdbcType=DATE})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.Clienttrack">
+    update clienttrack
+    set inputTime = #{inputtime,jdbcType=DATE},
+      client_id = #{client.id,jdbcType=BIGINT},
+      purpose = #{purpose,jdbcType=VARCHAR},
+      consultWay = #{consultway,jdbcType=VARCHAR},
+      summary = #{summary,jdbcType=VARCHAR},
+      nextTime = #{nexttime,jdbcType=DATE}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select id, inputTime, client_id, purpose,consultWay,summary,nextTime
+    from clienttrack
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, inputTime, client_id, purpose,consultWay,summary,nextTime
+    from clienttrack
+  </select>
+    <sql id="from_sql">
+      from clienttrack ct
+      LEFT JOIN client c
+      on ct.client_id=c.id
+    </sql>
+    <sql id="where_sql">
+        <where>
+            <if test="name!=null and name!=''">
+                and c.username like concat('%',#{name},'%')
+            </if>
+            <if test="qq!=null and qq!=''">
+                and c.QQ like concat('%',#{qq},'%')
+            </if>
+            <if test="wantedSchool!=null and wantedSchool!=''">
+                and c.wantedschool like concat('%',#{wantedSchool},'%')
+            </if>
+            <if test="subject!=null and subject!=''">
+                and c.wantedSubject like concat('%',#{subject},'%')
+            </if>
+            <if test="wantedClassId!=null">
+                and c.wantedclass_id=#{wantedClassId}
+            </if>
+            <if test="saleManId!=null">
+                and c.marketUser_id=#{saleManId}
+            </if>
+
+            <if test="beginTime!=null">
+                and ct.inputtime &gt; #{beginTime}
+            </if>
+            <if test="endTime!=null">
+                and ct.inputtime &lt;#{endTime}
+            </if>
+            <if test="interviewBeginTime!=null">
+                and ct.nexttime &gt;#{interviewBeginTime}
+            </if>
+            <if test="interviewEndTime!=null">
+                and ct.nexttime &lt;#{interviewEndTime}
+            </if>
+        </where>
+    </sql>
+    <select id="getTotalCount" resultType="long">
+        select count(ct.id) ,c.*
+        <include refid="from_sql"/>
+        <include refid="where_sql"/>
+    </select>
+
+    <select id="getListData" resultMap="BaseResultMap">
+        select ct.*,c.*
+        <include refid="from_sql"/>
+        <include refid="where_sql"/>
+        limit #{start},#{rows}
+    </select>
+</mapper>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.EmployeeMapper" >
+  <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Employee" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="realname" property="realname" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="inputtime" property="inputtime" jdbcType="DATE" />
+    <result column="state" property="state" jdbcType="BIT" />
+    <result column="admin" property="admin" jdbcType="BIT" />
+    <result column="basicwage" property="basicwage"/>
+    <association property="dept" javaType="org.memory.ischool.domain.Department" columnPrefix="d_">
+      <id column="id" property="id"></id>
+      <result column="name" property="name"></result>
+    </association>
+    <collection property="roles" ofType="org.memory.ischool.domain.Role" columnPrefix="r_">
+      <id column="id" property="id"></id>
+      <result column="name" property="name"></result>
+    </collection>
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from employee
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <delete id="deleteRelation">
+    delete from employee_role where employee_id = #{id}
+  </delete>
+
+
+
+  <insert id="insert" parameterType="org.memory.ischool.domain.Employee" useGeneratedKeys="true" keyProperty="id" >
+    insert into employee (username, realname, password, tel,
+      email, dept_id, inputtime, 
+      state, admin)
+    values (#{username,jdbcType=VARCHAR},#{realname,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR},
+      #{email,jdbcType=VARCHAR}, #{dept.id,jdbcType=INTEGER}, #{inputtime,jdbcType=DATE},
+      #{state,jdbcType=BIT}, #{admin,jdbcType=BIT})
+  </insert>
+
+  <insert id="saveRelation">
+    insert into employee_role values(#{employeeId},#{roleId})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.Employee" >
+    update employee
+    set username = #{username,jdbcType=VARCHAR},
+      realname = #{realname,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      dept_id = #{dept.id,jdbcType=INTEGER},
+      inputtime = #{inputtime,jdbcType=DATE},
+      admin = #{admin,jdbcType=BIT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, username, realname, password, tel, email, dept_id, inputtime, state, admin
+    from employee
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select e.*,d.id d_id,d.name d_name
+    from employee e
+    left join department d on e.dept_id = d.id
+  </select>
+
+  <sql id="condition">
+    <where>
+      <if test="keyword != null and keyword != ''">
+        (
+          username like concat("%",#{keyword},"%")
+          or realname like concat("%",#{keyword},"%")
+          or tel like concat("%",#{keyword},"%")
+        )
+      </if>
+    </where>
+  </sql>
+
+  <select id="getTotalCount" resultType="long">
+    select count(e.id) from employee e
+    <include refid="condition"/>
+  </select>
+
+  <select id="getListData" resultMap="BaseResultMap">
+      select e.*,d.id d_id,d.name d_name from employee e
+      left join department d on e.dept_id = d.id
+      <include refid="condition"/>
+       limit #{start},#{rows}
+  </select>
+
+  <select id="getRolesId" resultType="long">
+      select role_id from employee_role where employee_id = #{id}
+  </select>
+
+  <select id="getDeptByName" resultType="org.memory.ischool.domain.Department">
+      select id,name,sn from department where name like concat("%",#{name},"%")
+  </select>
+
+  <select id="getEmployeeByName" resultMap="BaseResultMap">
+      select e.*,d.id d_id,d.name d_name from employee e
+      left join department d on e.dept_id = d.id where e.username = #{name}
+  </select>
+
+  <select id="getEmployeeByRealName" resultMap="BaseResultMap">
+    select e.*,d.id d_id,d.name d_name from employee e
+      left join department d on e.dept_id = d.id where e.realname = #{name}
+  </select>
+
+  <update id="changState">
+       update employee set state = 0 where id = #{id}
+    </update>
+
+  <select id="queryClientFromEmp" resultMap="BaseResultMap">
+        select e.*,c.*
+        from employee e
+        left join client c
+        on e.id=c.inputuser_id
+        where e.id=#{id}
+    </select>
+</mapper>

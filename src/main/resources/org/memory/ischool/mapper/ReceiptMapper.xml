@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.ReceiptMapper" >
+  <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Receipt" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="date" property="date" jdbcType="DATE" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="method" property="method" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="documentnumber" property="documentnumber" jdbcType="VARCHAR" />
+    <result column="bill" property="bill" jdbcType="BIT" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="classchange" property="classchange" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="BIT" />
+
+    <association property="marketuser" javaType="org.memory.ischool.domain.Employee" columnPrefix="em_">
+      <id column="id" property="id" jdbcType="BIGINT" />
+      <result column="realname" property="realname" jdbcType="VARCHAR" />
+    </association>
+
+    <association property="payee" javaType="org.memory.ischool.domain.Employee" columnPrefix="ep_">
+      <id column="id" property="id" jdbcType="BIGINT" />
+      <result column="realname" property="realname" jdbcType="VARCHAR" />
+    </association>
+
+    <association property="studentclass" javaType="org.memory.ischool.domain.Studentclass" columnPrefix="sc_">
+      <id column="id" property="id" jdbcType="BIGINT" />
+      <result column="classname" property="classname" jdbcType="VARCHAR" />
+    </association>
+
+    <association property="student" javaType="org.memory.ischool.domain.Student" columnPrefix="ss_">
+      <id column="id" property="id" jdbcType="BIGINT" />
+      <result column="username" property="username" jdbcType="VARCHAR" />
+    </association>
+
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from receipt
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert" parameterType="org.memory.ischool.domain.Receipt" useGeneratedKeys="true" keyProperty="id" >
+    insert into receipt (student, date, amount, 
+      studentclass, payee, method, 
+      type, documentnumber, bill, 
+      remark, marketuser, classchange, 
+      state)
+    values (#{student.id,jdbcType=BIGINT}, #{date,jdbcType=DATE}, #{amount,jdbcType=DECIMAL},
+      #{studentclass.id,jdbcType=VARCHAR}, #{payee.id,jdbcType=BIGINT}, #{method,jdbcType=VARCHAR},
+      #{type,jdbcType=VARCHAR}, #{documentnumber,jdbcType=VARCHAR}, #{bill,jdbcType=BIT}, 
+      #{remark,jdbcType=VARCHAR}, #{marketuser.id,jdbcType=BIGINT}, #{classchange,jdbcType=VARCHAR},
+      0)
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.Receipt" >
+    update receipt
+    set student = #{student.id,jdbcType=BIGINT},
+      date = #{date,jdbcType=DATE},
+      amount = #{amount,jdbcType=DECIMAL},
+      studentclass = #{studentclass.id,jdbcType=VARCHAR},
+      payee = #{payee.id,jdbcType=BIGINT},
+      method = #{method,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      documentnumber = #{documentnumber,jdbcType=VARCHAR},
+      bill = #{bill,jdbcType=BIT},
+      remark = #{remark,jdbcType=VARCHAR},
+      marketuser = #{marketuser.id,jdbcType=BIGINT},
+      classchange = #{classchange,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="changestate">
+    update receipt
+    set state = 1
+    where id = #{id}
+  </update>
+
+  <update id="cancelaudit">
+    update receipt
+    set state = 0
+    where id = #{id}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select r.*,em.id em_id,em.realname em_realname,ss.id ss_id,ss.username ss_username,sc.id sc_id, sc.classname sc_classname,ep.id ep_id,ep.realname ep_realname from receipt r
+    left join employee em on r.marketuser = em.id
+    left join employee ep on r.payee = ep.id
+    left join student ss on r.student = ss.id
+    left join studentclass sc on r.studentclass = sc.id
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    select r.*,em.id em_id,em.realname em_realname,ss.id ss_id,ss.username ss_username,sc.id sc_id, sc.classname sc_classname,ep.id ep_id,ep.realname ep_realname from receipt r
+    left join employee em on r.marketuser = em.id
+    left join employee ep on r.payee = ep.id
+    left join student ss on r.student = ss.id
+    left join studentclass sc on r.studentclass = sc.id
+  </select>
+
+  <sql id="condition">
+    <where>
+      <if test="keyword != null and keyword != ''">
+        (
+        em.realname like concat("%",#{keyword},"%")
+        or ss.username like concat("%",#{keyword},"%")
+        or sc.classname like concat("%",#{keyword},"%")
+        or ep.realname like concat("%",#{keyword},"%")
+        or method like concat("%",#{keyword},"%")
+        )
+      </if>
+      <if test="beginDate != null">
+        and date >= #{beginDate}
+      </if>
+      <if test="endDate != null">
+        and date &lt;= #{endDate}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getTotalCount" resultType="long">
+    select count(r.id) from receipt r
+    left join employee em on r.marketuser = em.id
+    left join employee ep on r.payee = ep.id
+    left join student ss on r.student = ss.id
+    left join studentclass sc on r.studentclass = sc.id
+    <include refid="condition"/>
+  </select>
+
+  <select id="getListData" resultMap="BaseResultMap">
+    select r.*,em.id em_id,em.realname em_realname,ss.id ss_id,ss.username ss_username,sc.id sc_id, sc.classname sc_classname,ep.id ep_id,ep.realname ep_realname from receipt r
+    left join employee em on r.marketuser = em.id
+    left join employee ep on r.payee = ep.id
+    left join student ss on r.student = ss.id
+    left join studentclass sc on r.studentclass = sc.id
+    <include refid="condition"/>
+    limit #{start},#{rows}
+  </select>
+</mapper>

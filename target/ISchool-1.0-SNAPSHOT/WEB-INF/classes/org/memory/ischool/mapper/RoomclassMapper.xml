@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.memory.ischool.mapper.RoomclassMapper">
+    <resultMap id="BaseResultMap" type="org.memory.ischool.domain.Roomclass">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="classroom" property="classroom" jdbcType="VARCHAR"/>
+        <result column="roomlocation" property="roomlocation" jdbcType="VARCHAR"/>
+        <result column="totalstudent" property="totalstudent" jdbcType="BIGINT"/>
+        <result column="inputdate" property="inputdate" jdbcType="DATE"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+
+        <association property="studentclass" javaType="org.memory.ischool.domain.Studentclass" columnPrefix="st_">
+            <result column="id" property="id"></result>
+            <!--查询班级的名称-->
+            <result column="classname" property="classname"></result>
+            <result column="seating" property="seating"></result>
+        </association>
+
+
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from roomclass
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+    <insert id="insert" parameterType="org.memory.ischool.domain.Roomclass" useGeneratedKeys="true" keyProperty="id">
+    insert into roomclass (classroom, roomlocation, studentclass_id,
+      totalstudent, inputdate, remark)
+    values (#{classroom,jdbcType=VARCHAR}, #{roomlocation,jdbcType=VARCHAR}, #{studentclass.id,jdbcType=BIGINT},
+      #{totalstudent,jdbcType=BIGINT}, #{inputdate,jdbcType=DATE},
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+
+    <update id="updateByPrimaryKey" parameterType="org.memory.ischool.domain.Roomclass">
+    update roomclass
+    set classroom = #{classroom,jdbcType=VARCHAR},
+      roomlocation = #{roomlocation,jdbcType=VARCHAR},
+      studentclass_id = #{studentclass.id,jdbcType=BIGINT},
+      totalstudent = #{totalstudent,jdbcType=BIGINT},
+      inputdate = #{inputdate,jdbcType=DATE},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select id, classroom, roomlocation, studentclass_id, totalstudent, inputdate,
+    remark
+    from roomclass
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, classroom, roomlocation, studentclass_id, totalstudent, inputdate,
+    remark
+    from roomclass
+  </select>
+
+
+    <!--condition-->
+    <sql id="where_sql">
+        <where>
+            <if test="keyword!=null and  keyword !=''">
+                (
+                rc.classroom like concat("%",#{keyword},"%")
+                or rc.roomlocation like concat("%",#{keyword},"%")
+                )
+            </if>
+            <if test="begindate!=null">
+                and inputdate &gt; #{begindate}
+            </if>
+            <if test="enddate!=null">
+                and inputdate &lt; #{enddate}
+            </if>
+        </where>
+    </sql>
+
+
+    <!--获取总条数-->
+    <select id="getTotalCount" resultType="long">
+        select count(rc.id)
+        from roomclass rc
+        join studentclass st
+        on rc.studentclass_id =st.id
+        <include refid="where_sql"></include>
+    </select>
+
+    <!--获取结果集-->
+    <select id="getListData" resultMap="BaseResultMap">
+        select rc.* , st.id st_id , st.seating st_seating ,st.classname st_classname
+        from roomclass rc
+        join studentclass st
+        on rc.studentclass_id =st.id
+        <include refid="where_sql"></include>
+        limit #{start},#{rows}
+    </select>
+
+    <!--查询班级根据id-->
+    <select id="getRoomclassById" resultType="long">
+    SELECT   st.id st_id , st.classname st_classname
+    from  studentclass st
+    where id=#{id}
+  </select>
+    <!--改变状态值-->
+    <update id="changState">
+    UPDATE  roomclass set state=0
+     where  id = #{id}
+  </update>
+
+</mapper>
